@@ -1,0 +1,36 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Función para verificar si el usuario es administrador
+    function isAdmin() {
+      return request.auth != null && request.auth.token.email == 'admin@gmail.com';
+    }
+
+    // Reglas para la colección de productos
+    match /productos/{producto} {
+      allow read: if true;  // Cualquiera puede leer productos
+      allow write: if isAdmin();  // Solo admin puede escribir productos
+    }
+
+    // Reglas para la colección de usuarios
+    match /usuarios/{usuario} {
+      allow read: if request.auth != null && 
+        (request.auth.uid == usuario || isAdmin());
+      allow write: if request.auth != null && 
+        (request.auth.uid == usuario || isAdmin());
+    }
+
+    // Reglas para la colección de órdenes
+    match /ordenes/{orden} {
+      allow read: if request.auth != null && 
+        (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if request.auth != null;
+      allow update, delete: if isAdmin();
+    }
+
+    // Regla para la colección de prueba (solo en desarrollo)
+    match /test/{document} {
+      allow read, write: if false;  // Deshabilitar en producción
+    }
+  }
+} 
