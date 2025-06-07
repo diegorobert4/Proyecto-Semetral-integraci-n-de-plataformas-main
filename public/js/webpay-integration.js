@@ -1,80 +1,51 @@
 // IMPORTANTE: Este archivo debe ser un módulo ES6
 // Si Transbank no proporciona un módulo ES6, necesitaremos una estrategia diferente
 
-// Simulación de la integración de Webpay (modo desarrollo)
-export const WebpayPlus = {
-    Transaction: {
-        create: async (sessionId, orderId, total) => {
-            console.warn('MODO DESARROLLO: Simulando creación de transacción Webpay');
-            return {
-                token: `dev_token_${Date.now()}`,
-                url: 'https://transbank-dev.cl/pagar'
-            };
-        },
-        commit: async (token) => {
-            console.warn('MODO DESARROLLO: Simulando confirmación de transacción');
-            return {
-                status: 'AUTHORIZED',
-                amount: 10000,
-                transaction_date: new Date().toISOString()
-            };
-        }
-    },
-    configureForIntegration: (commerceCode, apiKey) => {
-        console.log('Configurando Webpay para integración', { commerceCode, apiKey });
-    },
-    configureForProduction: (commerceCode, apiKey) => {
-        console.log('Configurando Webpay para producción', { commerceCode, apiKey });
-    }
-};
 
-import { getAuth } from 'firebase/auth';
+
+
+import { getAuth } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
 import { TRANSBANK_CONFIG } from './config/transbank-config.js';
 
 class WebpayIntegration {
     constructor() {
         console.log('Inicializando WebpayIntegration');
-        // Configuración de Webpay usando el archivo de configuración
-        this.commerceCode = TRANSBANK_CONFIG.COMMERCE_CODE;
-        this.apiKey = TRANSBANK_CONFIG.API_KEY;
-        
-        console.log('Configuración:', {
-            commerceCode: this.commerceCode,
-            environment: TRANSBANK_CONFIG.ENVIRONMENT
-        });
-        
-        // Configurar el entorno (integración o producción)
-        this.initializeWebpay();
+        this.functionsUrl = 'https://us-central1-auto-parts-2025.cloudfunctions.net';
     }
 
-    initializeWebpay() {
+    async createTransaction(amount, sessionId, orderId, items, returnUrl = TRANSBANK_CONFIG.RETURN_URL) {
         try {
-            // Configuración para ambiente de integración
-            if (TRANSBANK_CONFIG.ENVIRONMENT === 'integration') {
-                console.log('Configurando Webpay para ambiente de integración');
-                WebpayPlus.configureForIntegration(this.commerceCode, this.apiKey);
-            } else {
-                console.log('Configurando Webpay para ambiente de producción');
-                WebpayPlus.configureForProduction(this.commerceCode, this.apiKey);
+            const auth = getAuth();
+            const user = auth.currentUser;
+
+            if (!user) {
+                throw new Error('Usuario no autenticado');
             }
-        } catch (error) {
-            console.error('Error al configurar Webpay:', error);
-        }
-    }
 
-    async createTransaction(total, sessionId) {
-        try {
-            console.log('Creando transacción con:', { total, sessionId });
-            
-            const transaction = await WebpayPlus.Transaction.create(
-                sessionId, // ID único de la transacción
-                `order_${Date.now()}`, // ID de la orden
-                total // Monto total
-            );
+            console.log('Creando transacción con:', { amount, sessionId, orderId, items });
 
+            const response = await fetch(`${this.functionsUrl}/createWebpayTransaction`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    amount,
+                    sessionId,
+                    orderId,
+                    returnUrl,
+                    items,
+                    userId: user.uid
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`Error HTTP: ${response.status}`);
+            }
+
+            const transaction = await response.json();
             console.log('Transacción creada:', transaction);
 
-            // Guardar detalles de la transacción para referencia posterior
             return {
                 token: transaction.token,
                 url: transaction.url
@@ -87,10 +58,113 @@ class WebpayIntegration {
 
     async confirmTransaction(token) {
         try {
-            const response = await WebpayPlus.Transaction.commit(token);
-            return response;
+            // Mostrar loading mientras se procesa la confirmación
+            Swal.fire({
+                title: 'Procesando pago...',
+                html: `
+                    <div class="text-center">
+                        <div class="spinner-border text-primary mb-3" role="status">
+                            <span class="visually-hidden">Cargando...</span>
+                        </div>
+                        <p>Confirmando transacción con WebPay</p>
+                        <small class="text-muted">Por favor espera, no cierres esta ventana</small>
+                    </div>
+                `,
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                showConfirmButton: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            const response = await fetch(`${this.functionsUrl}/confirmWebpayTransaction`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ token })
+            });
+
+            if (!response.ok) {
+                throw new Error(`Error HTTP: ${response.status}`);
+            }
+
+            const result = await response.json();
+            
+            // Mostrar mensaje de confirmación
+            if (result.status === 'AUTHORIZED') {
+                await Swal.fire({
+                    icon: 'success',
+                    title: '¡Pago Exitoso!',
+                    html: `
+                        <div class="text-center">
+                            <p class="mb-3">Tu pago ha sido procesado correctamente</p>
+                            <div class="alert alert-success">
+                                <strong>Código de autorización:</strong> ${result.authorization_code}<br>
+                                <strong>Fecha:</strong> ${new Date(result.transaction_date).toLocaleString()}<br>
+                                <strong>Monto:</strong> $${result.amount.toLocaleString()}
+                            </div>
+                            <p class="mt-3">Recibirás un correo con los detalles de tu compra</p>
+                            <div class="mt-4">
+                                <button class="btn btn-primary me-2" onclick="window.location.href='/views/mis-ordenes.html'">
+                                    <i class="bi bi-box me-2"></i>Ver Mis Órdenes
+                                </button>
+                                <button class="btn btn-outline-secondary" onclick="Swal.close()">
+                                    Continuar
+                                </button>
+                            </div>
+                        </div>
+                    `,
+                    showConfirmButton: false,
+                    allowOutsideClick: false
+                });
+
+                // La limpieza del carrito y redirección se manejan en setupWebpayReturnHandler
+                // de cada página específica para evitar conflictos
+            } else {
+                throw new Error('Transacción no autorizada');
+            }
+
+            return result;
         } catch (error) {
             console.error('Error al confirmar transacción:', error);
+            await Swal.fire({
+                icon: 'error',
+                title: 'Error en el Pago',
+                text: 'No se pudo completar la transacción. Por favor, intenta nuevamente.',
+                confirmButtonText: 'Volver al Carrito'
+            });
+            throw error;
+        }
+    }
+
+    async refundTransaction(token, amount) {
+        try {
+            const response = await fetch(`${this.baseUrl}/rswebpaytransaction/api/webpay/v1.2/transactions/${token}/refunds`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Tbk-Api-Key-Id': TRANSBANK_CONFIG.COMMERCE_CODE,
+                    'Tbk-Api-Key-Secret': TRANSBANK_CONFIG.API_KEY
+                },
+                body: JSON.stringify({ amount })
+            });
+
+            if (!response.ok) {
+                throw new Error(`Error HTTP: ${response.status}`);
+            }
+
+            const result = await response.json();
+            return {
+                type: result.type,
+                authorization_code: result.authorization_code,
+                response_code: result.response_code,
+                amount: result.amount,
+                status: 'REVERSED'
+            };
+        } catch (error) {
+            console.error('Error al anular la transacción:', error);
             throw error;
         }
     }

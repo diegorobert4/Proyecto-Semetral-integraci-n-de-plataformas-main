@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Órdenes - Auto Parts</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles/main.css">
+    <style>
+        .profile-hero {
+            height: 30vh;
+            background: linear-gradient(135deg, #1a1a1a 0%, #333333 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('../imgs/m4-competition-portada.PNG') center center;
+            background-size: cover;
+            opacity: 0.2;
+            z-index: 1;
+        }
+
+        .profile-hero .hero-content {
+            position: relative;
+            z-index: 2;
+            padding-top: 5vh;
+        }
+
+        .profile-hero h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(45deg, #ff3366, #ff6b6b);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+    </style>
+</head>
+<body>
+    <!-- Contenedor para el navbar -->
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark sticky-top shadow-sm">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="../views/index.html">
+                <i class="bi bi-gear-fill me-2"></i>
+                <span class="fw-bold">Auto Parts</span>
+            </a>
+            
+            <!-- Contenedor de botones móviles -->
+            <div class="d-md-none d-flex align-items-center ms-auto">
+                <!-- Carrito en móviles -->
+                <a class="btn btn-primary d-flex align-items-center gap-2 me-2 cart-link" href="../views/carrito.html">
+                    <i class="bi bi-cart3"></i>
+                    <span class="badge bg-danger cart-count">0</span>
+                </a>
+                
+                <!-- Botón de menú móvil -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </div>
+    
+            <!-- Menú desplegable -->
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="../views/index.html">
+                            <i class="bi bi-house-door me-2"></i>Inicio
+                        </a>
+                    </li>
+                    <li class="nav-item regular-catalog">
+                        <a class="nav-link" href="../views/catalogo.html">
+                            <i class="bi bi-grid me-2"></i>Catálogo
+                        </a>
+                    </li>
+                    <li class="nav-item mayorista-menu d-none">
+                        <a class="nav-link" href="https://auto-parts-2025.web.app/views/mayorista.html">
+                            <i class="bi bi-box-seam me-2"></i>Catálogo Mayorista
+                        </a>
+                    </li>
+                    <li class="nav-item non-mayorista-menu">
+                        <a class="nav-link" href="../views/mayoristas.html">
+                            <i class="bi bi-box-seam me-2"></i>Mayoristas
+                        </a>
+                    </li>
+                </ul>
+    
+                <div class="d-flex align-items-center">
+                    <!-- Carrito -->
+                    <a href="../views/carrito.html" class="btn btn-primary position-relative me-3 cart-link">
+                        <i class="bi bi-cart3"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger cart-count">
+                            0
+                        </span>
+                    </a>
+
+                    <!-- Botones de escritorio -->
+                    <div id="authButtons" class="d-flex align-items-center">
+                        <a href="../views/iniciar-sesion.html" class="btn btn-outline-light">
+                            <i class="bi bi-person me-2"></i>Iniciar Sesión
+                        </a>
+                    </div>
+                
+                    <!-- Menú de usuario -->
+                    <div class="user-menu d-none dropdown ms-2">
+                        <button class="btn btn-outline-light dropdown-toggle d-flex align-items-center" type="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle me-2"></i>
+                            <span class="user-name">Usuario</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center" href="../views/mi-perfil.html">
+                                    <i class="bi bi-person me-2 text-primary"></i>Mi Perfil
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center active" href="../views/mis-ordenes.html">
+                                    <i class="bi bi-box me-2"></i>Mis Órdenes
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center text-danger" href="#" id="logoutBtn">
+                                    <i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesión
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenido principal -->
+    <main>
+        <!-- Hero Section -->
+        <div class="profile-hero mb-4">
+            <div class="container">
+                <div class="hero-content text-center">
+                    <h1>Mis Órdenes</h1>
+                    <p class="lead text-white">Historial y seguimiento de tus compras</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contenedor de órdenes -->
+        <div class="container py-5">
+            <div id="orders-container">
+                <!-- Las órdenes se cargarán dinámicamente aquí -->
+                <div class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Cargando...</span>
+                    </div>
+                    <p class="mt-3">Cargando tus órdenes...</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script type="module">
+        import { auth } from '../js/config/firebase-config.js';
+        
+        // Función para verificar si un usuario es mayorista
+        async function isMayorista(user) {
+            if (!user) return false;
+            try {
+                return user.email.toLowerCase().includes('mayorista');
+            } catch (error) {
+                console.error('Error al verificar mayorista:', error);
+                return false;
+            }
+        }
+        
+        // Actualizar enlaces del carrito
+        async function updateCartLinks(user) {
+            const cartLinks = document.querySelectorAll('.cart-link');
+            if (user) {
+                const esMayorista = await isMayorista(user);
+                if (esMayorista) {
+                    cartLinks.forEach(link => {
+                        link.href = '../views/carrito-mayorista.html';
+                    });
+                }
+            }
+        }
+
+        // Función para actualizar la UI basada en el estado de autenticación
+        async function updateAuthUI(user) {
+            const authButtons = document.getElementById('authButtons');
+            const userMenu = document.querySelector('.user-menu');
+            const adminMenuItems = document.querySelectorAll('.admin-menu');
+            const mayoristaMenuItems = document.querySelectorAll('.mayorista-menu');
+            const regularCatalogItems = document.querySelectorAll('.regular-catalog');
+            const nonMayoristaMenuItems = document.querySelectorAll('.non-mayorista-menu');
+            
+            if (user) {
+                // Ocultar botones de auth y mostrar menú de usuario
+                if (authButtons) authButtons.classList.add('d-none');
+                if (userMenu) {
+                    userMenu.classList.remove('d-none');
+                    const userNameSpan = userMenu.querySelector('.user-name');
+                    if (userNameSpan) {
+                        userNameSpan.textContent = user.email;
+                    }
+                }
+                
+                // Verificar si es mayorista
+                const esMayorista = await isMayorista(user);
+                mayoristaMenuItems.forEach(item => {
+                    if (esMayorista) {
+                        item.classList.remove('d-none');
+                    } else {
+                        item.classList.add('d-none');
+                    }
+                });
+
+                // Ocultar catálogo regular y mostrar/ocultar botón de mayoristas
+                regularCatalogItems.forEach(item => {
+                    if (esMayorista) {
+                        item.classList.add('d-none');
+                    } else {
+                        item.classList.remove('d-none');
+                    }
+                });
+
+                // Mostrar/ocultar enlace de mayoristas para no mayoristas
+                nonMayoristaMenuItems.forEach(item => {
+                    if (esMayorista) {
+                        item.classList.add('d-none');
+                    } else {
+                        item.classList.remove('d-none');
+                    }
+                });
+                
+                // Mostrar/ocultar elementos de administrador
+                adminMenuItems.forEach(item => {
+                    if (user.email === 'admin@gmail.com') {
+                        item.classList.remove('d-none');
+                    } else {
+                        item.classList.add('d-none');
+                    }
+                });
+
+                await updateCartLinks(user);
+            } else {
+                // Mostrar botones de auth y ocultar menús
+                if (authButtons) authButtons.classList.remove('d-none');
+                if (userMenu) userMenu.classList.add('d-none');
+                adminMenuItems.forEach(item => item.classList.add('d-none'));
+                mayoristaMenuItems.forEach(item => item.classList.add('d-none'));
+                regularCatalogItems.forEach(item => item.classList.remove('d-none'));
+                nonMayoristaMenuItems.forEach(item => item.classList.remove('d-none'));
+                
+                // Redirigir si no hay usuario autenticado
+                window.location.href = 'iniciar-sesion.html';
+            }
+        }
+
+        // Escuchar cambios en el estado de autenticación
+        auth.onAuthStateChanged(async (user) => {
+            await updateAuthUI(user);
+        });
+
+        // Configurar cierre de sesión
+        document.getElementById('logoutBtn')?.addEventListener('click', async () => {
+            try {
+                await auth.signOut();
+                window.location.href = 'index.html';
+            } catch (error) {
+                console.error('Error al cerrar sesión:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'No se pudo cerrar sesión. Intente nuevamente.',
+                    confirmButtonColor: '#0066B1'
+                });
+            }
+        });
+    </script>
+    <script type="module" src="../js/app.js"></script>
+<script type="module" src="../js/cart.js"></script>
+<script type="module" src="../js/cart-counter-manager.js"></script>
+<script type="module" src="../js/orders-page.js"></script>
+</body>
+</html> 

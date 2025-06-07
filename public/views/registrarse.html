@@ -9,6 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../styles/main.css">
     <link rel="stylesheet" href="../styles/auth.css">
+    <link href="../css/footer.css" rel="stylesheet">
 </head>
 <body>
     <!-- Contenedor para el navbar -->
@@ -136,28 +137,151 @@
         </div>
     </div>
 
-    <footer class="bg-dark text-light py-4 mt-5">
+    <footer class="bg-dark text-light py-5 mt-5 modern-footer">
         <div class="container">
-            <div class="row">
-                <div class="col-md-4">
-                    <h5>Auto Parts</h5>
-                    <p>Tu proveedor confiable de repuestos automotrices</p>
+            <div class="row gy-4">
+                <!-- Columna de la marca -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="footer-brand">
+                        <h3 class="fw-bold mb-3">
+                            <i class="bi bi-gear-fill text-primary me-2"></i>
+                            Auto Parts
+                        </h3>
+                        <p class="text-light-emphasis mb-3">
+                            Tu proveedor confiable de repuestos automotrices de alta calidad. 
+                            Únete a nuestra comunidad y disfruta de los mejores precios.
+                        </p>
+                        <div class="social-links">
+                            <a href="#" class="btn btn-outline-light btn-sm me-2" title="Facebook">
+                                <i class="bi bi-facebook"></i>
+                            </a>
+                            <a href="#" class="btn btn-outline-light btn-sm me-2" title="Instagram">
+                                <i class="bi bi-instagram"></i>
+                            </a>
+                            <a href="#" class="btn btn-outline-light btn-sm me-2" title="Twitter">
+                                <i class="bi bi-twitter"></i>
+                            </a>
+                            <a href="#" class="btn btn-outline-light btn-sm" title="WhatsApp">
+                                <i class="bi bi-whatsapp"></i>
+                            </a>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-md-4">
-                    <h5>Enlaces Rápidos</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="#" class="text-light">Sobre Nosotros</a></li>
-                        <li><a href="#" class="text-light">Contacto</a></li>
-                        <li><a href="#" class="text-light">Términos y Condiciones</a></li>
+
+                <!-- Columna de navegación -->
+                <div class="col-lg-2 col-md-6 footer-section">
+                    <h5 class="text-primary mb-3">Navegación</h5>
+                    <ul class="list-unstyled footer-links">
+                        <li class="mb-2">
+                            <a href="index.html" class="text-light-emphasis text-decoration-none">
+                                <i class="bi bi-house me-2"></i>Inicio
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="catalogo.html" class="text-light-emphasis text-decoration-none catalog-link">
+                                <i class="bi bi-grid me-2"></i>Catálogo
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="iniciar-sesion.html" class="text-light-emphasis text-decoration-none">
+                                <i class="bi bi-box-arrow-in-right me-2"></i>Iniciar Sesión
+                            </a>
+                        </li>
                     </ul>
                 </div>
-                <div class="col-md-4">
-                    <h5>Contacto</h5>
-                    <ul class="list-unstyled">
-                        <li>Email: contacto@autoparts.com</li>
-                        <li>Teléfono: (123) 456-7890</li>
-                        <li>Dirección: Calle Principal #123</li>
+
+                <!-- Columna de servicios -->
+                <div class="col-lg-3 col-md-6 footer-section">
+                    <h5 class="text-primary mb-3">¿Por qué elegirnos?</h5>
+                    <ul class="list-unstyled footer-links">
+                        <li class="mb-2">
+                            <a href="#" class="text-light-emphasis text-decoration-none">
+                                <i class="bi bi-shield-check me-2"></i>Productos Garantizados
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="#" class="text-light-emphasis text-decoration-none">
+                                <i class="bi bi-truck me-2"></i>Envío Rápido
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="#" class="text-light-emphasis text-decoration-none">
+                                <i class="bi bi-chat-dots me-2"></i>Soporte 24/7
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="#" class="text-light-emphasis text-decoration-none">
+                                <i class="bi bi-percent me-2"></i>Mejores Precios
+                            </a>
+                        </li>
                     </ul>
+                </div>
+
+                <!-- Columna de contacto -->
+                <div class="col-lg-3 col-md-6 footer-section">
+                    <h5 class="text-primary mb-3">Contacto</h5>
+                    <div class="contact-info">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="icon-wrapper bg-primary rounded-circle p-2 me-3">
+                                <i class="bi bi-geo-alt text-white"></i>
+                            </div>
+                            <div>
+                                <small class="text-light-emphasis d-block">Dirección</small>
+                                <span class="text-light">Av. Principal #123, Santiago</span>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="icon-wrapper bg-primary rounded-circle p-2 me-3">
+                                <i class="bi bi-telephone text-white"></i>
+                            </div>
+                            <div>
+                                <small class="text-light-emphasis d-block">Teléfono</small>
+                                <span class="text-light">+56 9 1234 5678</span>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="icon-wrapper bg-primary rounded-circle p-2 me-3">
+                                <i class="bi bi-envelope text-white"></i>
+                            </div>
+                            <div>
+                                <small class="text-light-emphasis d-block">Email</small>
+                                <span class="text-light">contacto@autoparts.cl</span>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <div class="icon-wrapper bg-success rounded-circle p-2 me-3">
+                                <i class="bi bi-clock text-white"></i>
+                            </div>
+                            <div>
+                                <small class="text-light-emphasis d-block">Horario</small>
+                                <span class="text-light">Lun - Vie: 8:00 - 18:00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="my-4 border-secondary">
+
+            <!-- Footer bottom -->
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <p class="mb-0 text-light-emphasis">
+                        &copy; 2024 Auto Parts. Todos los derechos reservados.
+                    </p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <div class="footer-legal">
+                        <a href="#" class="text-light-emphasis text-decoration-none me-3">
+                            Términos y Condiciones
+                        </a>
+                        <a href="#" class="text-light-emphasis text-decoration-none me-3">
+                            Política de Privacidad
+                        </a>
+                        <a href="#" class="text-light-emphasis text-decoration-none">
+                            Centro de Ayuda
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -165,10 +289,58 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script type="module" src="../js/config/firebase-config.js"></script>
-    <script type="module" src="../js/navbar-auth.js"></script>
-    <script type="module" src="../js/app.js"></script>
-    <script type="module" src="../js/navbar.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+    <script type="module">
+        import { auth } from '../js/config/firebase-config.js';
+        
+        // Función para verificar si un usuario es mayorista
+        async function isMayorista(user) {
+            if (!user) return false;
+            try {
+                return user.email.toLowerCase().includes('mayorista');
+            } catch (error) {
+                console.error('Error al verificar mayorista:', error);
+                return false;
+            }
+        }
+        
+        // Solo actualizar UI, no redirigir automáticamente
+        auth.onAuthStateChanged(async (user) => {
+            const authButtons = document.getElementById('authButtons');
+            const userMenu = document.querySelector('.user-menu');
+            
+            if (user) {
+                if (authButtons) authButtons.classList.add('d-none');
+                if (userMenu) {
+                    userMenu.classList.remove('d-none');
+                    const userNameSpan = userMenu.querySelector('.user-name');
+                    if (userNameSpan) {
+                        userNameSpan.textContent = user.email;
+                    }
+                }
+                
+                // Actualizar enlaces del catálogo según el tipo de usuario
+                const esMayorista = await isMayorista(user);
+                const catalogLinks = document.querySelectorAll('.catalog-link');
+                catalogLinks.forEach(link => {
+                    link.href = esMayorista ? '../views/mayorista.html' : '../views/catalogo.html';
+                });
+            } else {
+                if (authButtons) authButtons.classList.remove('d-none');
+                if (userMenu) userMenu.classList.add('d-none');
+            }
+        });
+        
+        // Configurar cierre de sesión
+        document.getElementById('logoutBtn')?.addEventListener('click', async () => {
+            try {
+                await auth.signOut();
+                window.location.href = 'index.html';
+            } catch (error) {
+                console.error('Error al cerrar sesión:', error);
+            }
+        });
+    </script>
     <script type="module" src="../js/auth.js"></script>
 </body>
 </html> 

@@ -1,5 +1,5 @@
 import { db } from './firebase-config.js';
-import { collection, addDoc, getDocs, query, where } from 'firebase/firestore';
+import { collection, addDoc, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 // Función de prueba completa
 export async function testConexionFirestore() {

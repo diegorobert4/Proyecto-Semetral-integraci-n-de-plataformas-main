@@ -57,9 +57,6 @@ export default class ShoppingCart {
         
         // Guardar en localStorage
         this.saveCart();
-        
-        // Mostrar notificación de producto agregado
-        this.showAddedToCartNotification(product);
     }
 
     // Actualizar cantidad de un producto
@@ -106,12 +103,31 @@ export default class ShoppingCart {
         
         // Actualizar contador de carrito
         this.updateCartCount();
+        
+        // Actualizar la visualización del carrito
+        this.updateCartDisplay();
+
+        // Disparar un evento personalizado para notificar que el carrito se ha limpiado
+        window.dispatchEvent(new CustomEvent('cartCleared'));
+        
+        console.log('Carrito limpiado exitosamente');
     }
 
     // Calcular el total del carrito
     getTotal() {
-        // Calcular total sumando (precio * cantidad) de cada item
+        const subtotal = this.items.reduce((total, item) => total + (item.precio * item.quantity), 0);
+        const tax = subtotal * 0.19; // IVA 19%
+        return subtotal + tax;
+    }
+
+    // Obtener el subtotal del carrito (sin IVA)
+    getSubtotal() {
         return this.items.reduce((total, item) => total + (item.precio * item.quantity), 0);
+    }
+
+    // Obtener el IVA del carrito
+    getTax() {
+        return this.getSubtotal() * 0.19;
     }
 
     // Obtener el total de items en el carrito
@@ -157,6 +173,24 @@ export default class ShoppingCart {
                         </div>
                     </div>
                 `).join('');
+
+                // Agregar resumen de totales
+                cartItems.innerHTML += `
+                    <div class="border-top pt-2 mt-2">
+                        <div class="d-flex justify-content-between mb-1">
+                            <small class="text-muted">Subtotal:</small>
+                            <small>$${this.getSubtotal().toLocaleString()}</small>
+                        </div>
+                        <div class="d-flex justify-content-between mb-1">
+                            <small class="text-muted">IVA (19%):</small>
+                            <small>$${this.getTax().toLocaleString()}</small>
+                        </div>
+                        <div class="d-flex justify-content-between fw-bold">
+                            <span>Total:</span>
+                            <span>$${this.getTotal().toLocaleString()}</span>
+                        </div>
+                    </div>
+                `;
             }
         }
         
@@ -178,24 +212,54 @@ export default class ShoppingCart {
 
     // Mostrar notificación de producto agregado
     showAddedToCartNotification(product) {
+        // Crear un elemento temporal para formatear mejor el contenido
+        const notificationContent = document.createElement('div');
+        notificationContent.className = 'd-flex flex-column align-items-center';
+        
+        notificationContent.innerHTML = `
+            <div class="d-flex align-items-center gap-3 mb-3">
+                <img src="${product.imagen}" alt="${product.nombre}" 
+                    style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;">
+                <div>
+                    <h5 class="mb-1">${product.nombre}</h5>
+                    <p class="text-muted mb-1">Precio: $${product.precio.toLocaleString()}</p>
+                    <p class="text-success mb-0">
+                        <i class="bi bi-check-circle-fill me-2"></i>
+                        ¡Agregado al carrito!
+                    </p>
+                </div>
+            </div>
+            <div class="w-100">
+                <p class="text-center mb-2">
+                    <i class="bi bi-cart-check me-2"></i>
+                    Total en carrito: ${this.getTotalItems()} producto${this.getTotalItems() !== 1 ? 's' : ''}
+                </p>
+                <div class="d-flex justify-content-between gap-2">
+                    <button class="btn btn-outline-primary flex-grow-1" onclick="window.location.href='../views/catalogo.html'">
+                        <i class="bi bi-arrow-left me-2"></i> Seguir comprando
+                    </button>
+                    <button class="btn btn-primary flex-grow-1" onclick="window.location.href='../views/carrito.html'">
+                        <i class="bi bi-cart3 me-2"></i> Ver carrito
+                    </button>
+                </div>
+            </div>
+        `;
+
         Swal.fire({
             icon: 'success',
-            title: '¡Producto agregado!',
-            html: `
-                <div class="d-flex flex-column align-items-center">
-                    <img src="${product.imagen}" alt="${product.nombre}" style="max-width: 100px; max-height: 100px; object-fit: cover;">
-                    <p class="mt-2">${product.nombre}</p>
-                    <p class="text-muted">Precio: $${product.precio.toLocaleString()}</p>
-                </div>
-            `,
+            title: '¡Producto Agregado!',
+            text: `${product.nombre} se agregó al carrito correctamente`,
+            confirmButtonText: 'Continuar',
+            confirmButtonColor: '#0066B1',
             showConfirmButton: true,
-            confirmButtonText: 'Ir al Carrito',
-            showCancelButton: true,
-            cancelButtonText: 'Seguir Comprando'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                window.location.href = '../views/carrito.html';
-            }
+            allowOutsideClick: true,
+            allowEscapeKey: true,
+            timer: 3000,
+            timerProgressBar: true,
+            position: 'center',
+            backdrop: true,
+            width: 400,
+            padding: '2rem'
         });
     }
 }

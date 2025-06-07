@@ -1,10 +1,10 @@
-// Importar las funciones necesarias de Firebase
+// Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getAuth } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import { getFirestore } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 import { getStorage } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
-// Configuración de Firebase
+// Your web app's Firebase configuration
 const firebaseConfig = {
     apiKey: "AIzaSyB7zt55jPT8IYyfGNnrcVw2HZjRQwc3Y14",
     authDomain: "auto-parts-2025.firebaseapp.com",
@@ -15,32 +15,14 @@ const firebaseConfig = {
     measurementId: "G-QC6EKQR3XS"
 };
 
-// Inicializar Firebase
-let app;
-let auth;
-let db;
-let storage;
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-try {
-    console.log('🔥 Inicializando Firebase...');
-    app = initializeApp(firebaseConfig);
-    console.log('✅ Firebase inicializado correctamente');
-
-    console.log('🔐 Inicializando Auth...');
-    auth = getAuth(app);
-    console.log('✅ Auth inicializado');
-
-    console.log('💾 Inicializando Firestore...');
-    db = getFirestore(app);
-    console.log('✅ Firestore inicializado');
-
-    console.log('📦 Inicializando Storage...');
-    storage = getStorage(app);
-    console.log('✅ Storage inicializado');
-} catch (error) {
-    console.error('❌ Error al inicializar Firebase:', error);
-    throw new Error('Error al inicializar Firebase: ' + error.message);
-}
+console.log('📦 Inicializando Storage...');
+const storage = getStorage(app);
+console.log('✅ Storage inicializado');
 
 // Exportar las instancias
 export { app, auth, db, storage }; 

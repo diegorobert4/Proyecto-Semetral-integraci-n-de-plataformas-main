@@ -15,6 +15,29 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="../styles/main.css">
     <link rel="stylesheet" href="../styles/profile.css">
+    <style>
+        .profile-section {
+            background-color: var(--light);
+            border-radius: 1rem;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+        }
+        .profile-header {
+            background-color: var(--primary);
+            color: white;
+            padding: 2rem;
+            border-radius: 1rem 1rem 0 0;
+        }
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid white;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.2);
+        }
+        .form-label {
+            font-weight: 500;
+        }
+    </style>
     
     <!-- SweetAlert2 JS - Cargado antes que nuestros scripts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.all.min.js"></script>
@@ -31,7 +54,7 @@
             <!-- Contenedor de botones móviles -->
             <div class="d-md-none d-flex align-items-center ms-auto">
                 <!-- Carrito en móviles -->
-                <a class="btn btn-primary d-flex align-items-center gap-2 me-2" href="../views/carrito.html">
+                <a class="btn btn-primary d-flex align-items-center gap-2 me-2 cart-link" href="../views/carrito.html">
                     <i class="bi bi-cart3"></i>
                     <span class="badge bg-danger cart-count">0</span>
                 </a>
@@ -50,12 +73,17 @@
                             <i class="bi bi-house-door me-2"></i>Inicio
                         </a>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item regular-catalog">
                         <a class="nav-link d-flex align-items-center" href="../views/catalogo.html">
                             <i class="bi bi-grid me-2"></i>Catálogo
                         </a>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item mayorista-menu d-none">
+                        <a class="nav-link d-flex align-items-center" href="https://auto-parts-2025.web.app/views/mayorista.html">
+                            <i class="bi bi-box-seam me-2"></i>Catálogo Mayorista
+                        </a>
+                    </li>
+                    <li class="nav-item non-mayorista-menu">
                         <a class="nav-link d-flex align-items-center" href="../views/mayoristas.html">
                             <i class="bi bi-box-seam me-2"></i>Mayoristas
                         </a>
@@ -64,11 +92,10 @@
     
                 <div class="d-flex align-items-center">
                     <!-- Carrito -->
-                    <a href="../views/carrito.html" class="btn btn-primary position-relative me-3">
+                    <a href="../views/carrito.html" class="btn btn-primary position-relative me-3 cart-link">
                         <i class="bi bi-cart3"></i>
                         <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger cart-count">
                             0
-                            <span class="visually-hidden">Artículos en el carrito</span>
                         </span>
                     </a>
 
@@ -81,14 +108,19 @@
                 
                     <!-- Menú de usuario -->
                     <div class="user-menu d-none dropdown ms-2">
-                        <button class="btn btn-outline-light dropdown-toggle d-flex align-items-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <button class="btn btn-outline-light dropdown-toggle d-flex align-items-center" type="button" data-bs-toggle="dropdown">
                             <i class="bi bi-person-circle me-2"></i>
                             <span class="user-name">Usuario</span>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end shadow border-0">
                             <li>
-                                <a class="dropdown-item d-flex align-items-center" href="../views/mi-perfil.html">
+                                <a class="dropdown-item d-flex align-items-center active" href="../views/mi-perfil.html">
                                     <i class="bi bi-person me-2 text-primary"></i>Mi Perfil
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center" href="../views/mis-ordenes.html">
+                                    <i class="bi bi-box me-2"></i>Mis Órdenes
                                 </a>
                             </li>
                             <li><hr class="dropdown-divider"></li>
@@ -118,272 +150,821 @@
         <div class="row justify-content-center">
             <div class="col-12 col-lg-10">
                 <!-- Información de Perfil -->
-                <div class="profile-card mb-4">
-                    <div class="card-header bg-gradient-primary text-white p-4 border-0">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="d-flex align-items-center">
-                                <i class="bi bi-person-circle fs-2 me-3"></i>
-                                <div>
-                                    <h5 class="mb-0">Información Personal</h5>
-                                    <p class="mb-0 opacity-75">Mantén tus datos actualizados</p>
-                                </div>
+                <div class="profile-section">
+                    <div class="profile-header">
+                        <div class="row align-items-center">
+                            <div class="col-md-10">
+                                <h1 class="mb-2" id="userFullName">Cargando...</h1>
+                                <p class="mb-0" id="userEmail">Cargando...</p>
+                                <p class="mb-0" id="userType">Tipo de usuario: Cargando...</p>
                             </div>
-                            <button class="btn btn-light btn-edit d-flex align-items-center" id="editarPerfilBtn">
-                                <i class="bi bi-pencil-square me-2"></i>
-                                Editar Perfil
-                            </button>
                         </div>
                     </div>
 
-                    <div class="card-body p-4">
-                        <!-- Vista de solo lectura -->
-                        <div id="perfilReadOnly">
+                    <div class="p-4">
+                        <form id="profileForm" class="needs-validation" novalidate>
                             <div class="row g-4">
                                 <div class="col-md-6">
-                                    <div class="info-card">
-                                        <div class="d-flex align-items-center mb-2">
-                                            <i class="bi bi-person me-2"></i>
-                                            <h6 class="mb-0">Nombre Completo</h6>
-                                        </div>
-                                        <p id="readOnlyName" class="mb-0 fw-bold">-</p>
+                                    <label class="form-label">Nombre</label>
+                                    <input type="text" class="form-control" id="nombre" required>
+                                    <div class="invalid-feedback">
+                                        Por favor ingresa tu nombre
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <div class="info-card">
-                                        <div class="d-flex align-items-center mb-2">
-                                            <i class="bi bi-envelope me-2"></i>
-                                            <h6 class="mb-0">Email</h6>
-                                        </div>
-                                        <p id="readOnlyEmail" class="mb-0 fw-bold">-</p>
+                                    <label class="form-label">Apellido</label>
+                                    <input type="text" class="form-control" id="apellido" required>
+                                    <div class="invalid-feedback">
+                                        Por favor ingresa tu apellido
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <div class="info-card">
-                                        <div class="d-flex align-items-center mb-2">
-                                            <i class="bi bi-telephone me-2"></i>
-                                            <h6 class="mb-0">Teléfono</h6>
-                                        </div>
-                                        <p id="readOnlyPhone" class="mb-0 fw-bold">-</p>
+                                    <label class="form-label">Teléfono</label>
+                                    <input type="tel" class="form-control" id="telefono" required>
+                                    <div class="invalid-feedback">
+                                        Por favor ingresa un teléfono válido
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <div class="info-card">
-                                        <div class="d-flex align-items-center mb-2">
-                                            <i class="bi bi-geo me-2"></i>
-                                            <h6 class="mb-0">Región</h6>
-                                        </div>
-                                        <p id="readOnlyRegion" class="mb-0 fw-bold">-</p>
+                                    <label class="form-label">RUT</label>
+                                    <input type="text" class="form-control" id="rut" required>
+                                    <div class="invalid-feedback">
+                                        Por favor ingresa un RUT válido
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Dirección</label>
+                                    <input type="text" class="form-control" id="direccion" required>
+                                    <div class="invalid-feedback">
+                                        Por favor ingresa tu dirección
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <div class="info-card">
-                                        <div class="d-flex align-items-center mb-2">
-                                            <i class="bi bi-pin-map me-2"></i>
-                                            <h6 class="mb-0">Comuna</h6>
-                                        </div>
-                                        <p id="readOnlyComuna" class="mb-0 fw-bold">-</p>
+                                    <label class="form-label">Ciudad</label>
+                                    <input type="text" class="form-control" id="ciudad" required>
+                                    <div class="invalid-feedback">
+                                        Por favor ingresa tu ciudad
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <div class="info-card">
-                                        <div class="d-flex align-items-center mb-2">
-                                            <i class="bi bi-house-door me-2"></i>
-                                            <h6 class="mb-0">Dirección</h6>
-                                        </div>
-                                        <p id="readOnlyAddress" class="mb-0 fw-bold">-</p>
+                                    <label class="form-label">Región</label>
+                                    <select class="form-select" id="region" required>
+                                        <option value="">Selecciona una región</option>
+                                        <option value="Arica y Parinacota">Arica y Parinacota</option>
+                                        <option value="Tarapacá">Tarapacá</option>
+                                        <option value="Antofagasta">Antofagasta</option>
+                                        <option value="Atacama">Atacama</option>
+                                        <option value="Coquimbo">Coquimbo</option>
+                                        <option value="Valparaíso">Valparaíso</option>
+                                        <option value="Metropolitana">Metropolitana</option>
+                                        <option value="O'Higgins">O'Higgins</option>
+                                        <option value="Maule">Maule</option>
+                                        <option value="Ñuble">Ñuble</option>
+                                        <option value="Biobío">Biobío</option>
+                                        <option value="Araucanía">Araucanía</option>
+                                        <option value="Los Ríos">Los Ríos</option>
+                                        <option value="Los Lagos">Los Lagos</option>
+                                        <option value="Aysén">Aysén</option>
+                                        <option value="Magallanes">Magallanes</option>
+                                    </select>
+                                    <div class="invalid-feedback">
+                                        Por favor selecciona tu región
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-
-                        <!-- Formulario de edición -->
-                        <form id="profileForm" class="needs-validation d-none" novalidate>
-                            <div class="row g-4">
-                                <div class="col-md-6">
-                                    <label class="form-label" for="fullName">
-                                        <i class="bi bi-person me-2"></i>Nombre Completo
-                                        <span class="text-danger">*</span>
-                                    </label>
-                                    <div class="input-group">
-                                        <span class="input-group-text">
-                                            <i class="bi bi-person-vcard"></i>
-                                        </span>
-                                        <input type="text" 
-                                               class="form-control" 
-                                               id="fullName" 
-                                               placeholder="Ingresa tu nombre completo"
-                                               required>
-                                    </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-save me-2"></i>Guardar Cambios
+                                    </button>
                                 </div>
-
-                                <div class="col-md-6">
-                                    <label class="form-label" for="email">
-                                        <i class="bi bi-envelope me-2"></i>Email
-                                    </label>
-                                    <div class="input-group">
-                                        <span class="input-group-text">
-                                            <i class="bi bi-envelope-at"></i>
-                                        </span>
-                                        <input type="email" 
-                                               class="form-control" 
-                                               id="email" 
-                                               disabled>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label class="form-label" for="phone">
-                                        <i class="bi bi-telephone me-2"></i>Teléfono
-                                    </label>
-                                    <div class="input-group">
-                                        <span class="input-group-text">
-                                            <i class="bi bi-phone"></i>
-                                        </span>
-                                        <input type="tel" 
-                                               class="form-control" 
-                                               id="phone" 
-                                               placeholder="+56 9 1234 5678">
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label class="form-label" for="region">
-                                        <i class="bi bi-geo me-2"></i>Región
-                                        <span class="text-danger">*</span>
-                                    </label>
-                                    <div class="input-group">
-                                        <span class="input-group-text">
-                                            <i class="bi bi-map"></i>
-                                        </span>
-                                        <select class="form-select" id="region" required>
-                                            <option value="">Selecciona una región</option>
-                                            <option value="Arica y Parinacota">Región de Arica y Parinacota</option>
-                                            <option value="Tarapacá">Región de Tarapacá</option>
-                                            <option value="Antofagasta">Región de Antofagasta</option>
-                                            <option value="Atacama">Región de Atacama</option>
-                                            <option value="Coquimbo">Región de Coquimbo</option>
-                                            <option value="Valparaíso">Región de Valparaíso</option>
-                                            <option value="Metropolitana">Región Metropolitana de Santiago</option>
-                                            <option value="O'Higgins">Región del Libertador General Bernardo O'Higgins</option>
-                                            <option value="Maule">Región del Maule</option>
-                                            <option value="Ñuble">Región de Ñuble</option>
-                                            <option value="Biobío">Región del Biobío</option>
-                                            <option value="Araucanía">Región de La Araucanía</option>
-                                            <option value="Los Ríos">Región de Los Ríos</option>
-                                            <option value="Los Lagos">Región de Los Lagos</option>
-                                            <option value="Aysén">Región de Aysén</option>
-                                            <option value="Magallanes">Región de Magallanes</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label class="form-label" for="comuna">
-                                        <i class="bi bi-pin-map me-2"></i>Comuna
-                                        <span class="text-danger">*</span>
-                                    </label>
-                                    <div class="input-group">
-                                        <span class="input-group-text">
-                                            <i class="bi bi-geo-alt"></i>
-                                        </span>
-                                        <select class="form-select" id="comuna" required>
-                                            <option value="">Selecciona una comuna</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label class="form-label" for="address">
-                                        <i class="bi bi-house-door me-2"></i>Dirección
-                                        <span class="text-danger">*</span>
-                                    </label>
-                                    <div class="input-group">
-                                        <span class="input-group-text">
-                                            <i class="bi bi-house"></i>
-                                        </span>
-                                        <input type="text" 
-                                               class="form-control" 
-                                               id="address" 
-                                               placeholder="Ingresa tu dirección"
-                                               required>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="action-buttons">
-                                <button type="submit" class="btn btn-save">
-                                    <i class="bi bi-check-circle me-2"></i>Guardar Cambios
-                                </button>
-                                <button type="button" class="btn btn-cancel" id="cancelarEdicion">
-                                    <i class="bi bi-x-circle me-2"></i>Cancelar
-                                </button>
                             </div>
                         </form>
                     </div>
                 </div>
 
-                <!-- Seguridad de la Cuenta -->
-                <div class="card border-0 shadow-lg rounded-4 overflow-hidden mt-4">
-                    <div class="card-header bg-gradient-warning text-dark py-4 border-0">
-                        <div class="d-flex align-items-center">
-                            <i class="bi bi-shield-lock fs-3 me-3"></i>
-                            <div>
-                                <h5 class="mb-0">Seguridad de la Cuenta</h5>
-                                <p class="mb-0 opacity-75">Gestiona la seguridad de tu cuenta</p>
+                <!-- Sección de Cambio de Contraseña -->
+                <div class="profile-section mt-4">
+                    <div class="p-4">
+                        <h3 class="mb-4">
+                            <i class="bi bi-shield-lock me-2 text-primary"></i>
+                            Seguridad de la Cuenta
+                        </h3>
+                        
+                        <!-- Botón para iniciar cambio de contraseña -->
+                        <div id="passwordChangePrompt">
+                            <div class="d-flex align-items-center justify-content-between p-3 border rounded mb-3">
+                                <div>
+                                    <h5 class="mb-1">Contraseña</h5>
+                                    <p class="mb-0 text-muted">Última actualización: hace tiempo</p>
+                                </div>
+                                <button type="button" class="btn btn-outline-warning" id="initiatePasswordChange">
+                                    <i class="bi bi-key me-2"></i>Cambiar Contraseña
+                                </button>
+                            </div>
+                            <div class="alert alert-light border">
+                                <i class="bi bi-shield-check me-2 text-success"></i>
+                                <strong>Tu cuenta está protegida.</strong> Cambia tu contraseña regularmente para mantener tu cuenta segura.
                             </div>
                         </div>
-                    </div>
-                    <div class="card-body p-4">
-                        <p class="mb-3">¿Necesitas cambiar tu contraseña?</p>
-                        <button id="forgotPasswordBtn" class="btn btn-warning">
-                            <i class="bi bi-key me-2"></i>Cambiar contraseña
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Eliminar Cuenta -->
-                <div class="card border-0 shadow-lg rounded-4 overflow-hidden mt-4">
-                    <div class="card-header bg-gradient-danger text-white py-4 border-0">
-                        <div class="d-flex align-items-center">
-                            <i class="bi bi-exclamation-triangle fs-3 me-3"></i>
-                            <div>
-                                <h5 class="mb-0">Zona de Peligro</h5>
-                                <p class="mb-0 opacity-75">Acciones irreversibles</p>
+                        
+                        <!-- Formulario de cambio de contraseña (oculto inicialmente) -->
+                        <div id="passwordFormContainer" class="d-none">
+                            <div class="alert alert-warning">
+                                <i class="bi bi-exclamation-triangle me-2"></i>
+                                <strong>Cambio de contraseña:</strong> Necesitarás tu contraseña actual para verificar tu identidad.
                             </div>
+                            
+                            <form id="passwordForm" class="needs-validation" novalidate>
+                                <div class="row g-4">
+                                    <div class="col-12">
+                                        <div class="alert alert-info">
+                                            <i class="bi bi-info-circle me-2"></i>
+                                            <strong>Importante:</strong> Tu nueva contraseña debe tener al menos 6 caracteres para mayor seguridad.
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <label class="form-label">Contraseña Actual</label>
+                                        <div class="input-group">
+                                            <input type="password" class="form-control" id="currentPassword" placeholder="Ingresa tu contraseña actual" required>
+                                            <button class="btn btn-outline-secondary" type="button" id="toggleCurrentPassword">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                        </div>
+                                        <div class="invalid-feedback">
+                                            Por favor ingresa tu contraseña actual
+                                        </div>
+                                        <div id="currentPasswordError" class="text-danger mt-1 d-none">
+                                            <i class="bi bi-exclamation-circle me-1"></i>
+                                            <span></span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6"></div>
+                                    
+                                    <div class="col-md-6">
+                                        <label class="form-label">Nueva Contraseña *</label>
+                                        <div class="input-group">
+                                            <input type="password" class="form-control" id="newPassword" required minlength="6">
+                                            <button class="btn btn-outline-secondary" type="button" id="toggleNewPassword">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                        </div>
+                                        <div class="invalid-feedback">
+                                            La nueva contraseña debe tener al menos 6 caracteres
+                                        </div>
+                                        <div id="newPasswordError" class="text-danger mt-1 d-none">
+                                            <i class="bi bi-exclamation-circle me-1"></i>
+                                            <span></span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <label class="form-label">Confirmar Nueva Contraseña *</label>
+                                        <div class="input-group">
+                                            <input type="password" class="form-control" id="confirmPassword" required>
+                                            <button class="btn btn-outline-secondary" type="button" id="toggleConfirmPassword">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                        </div>
+                                        <div class="invalid-feedback">
+                                            Las contraseñas no coinciden
+                                        </div>
+                                        <div id="confirmPasswordError" class="text-danger mt-1 d-none">
+                                            <i class="bi bi-exclamation-circle me-1"></i>
+                                            <span></span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-12">
+                                        <div class="d-flex gap-2">
+                                            <button type="submit" class="btn btn-warning">
+                                                <i class="bi bi-shield-lock me-2"></i>Cambiar Contraseña
+                                            </button>
+                                            <button type="button" class="btn btn-secondary" id="cancelPasswordChange">
+                                                <i class="bi bi-x-circle me-2"></i>Cancelar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
                         </div>
-                    </div>
-                    <div class="card-body p-4">
-                        <p class="card-text">Esta acción es permanente y no se puede deshacer. Se eliminarán todos tus datos.</p>
-                        <button id="deleteAccountBtn" class="btn btn-outline-danger">
-                            <i class="bi bi-trash me-2"></i>Eliminar mi cuenta
-                        </button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="bg-dark text-light py-4 mt-5">
+<!-- Footer -->
+    <footer class="bg-dark text-light py-5 mt-5 modern-footer">
         <div class="container">
-            <div class="row">
+            <div class="row gy-4">
+                <!-- Columna de la marca -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="footer-brand">
+                        <h3 class="fw-bold mb-3">
+                            <i class="bi bi-gear-fill text-primary me-2"></i>
+                            Auto Parts
+                        </h3>
+                        <p class="text-light-emphasis mb-3">
+                            Tu proveedor confiable de repuestos automotrices de alta calidad. 
+                            Especialistas en piezas originales y compatibles para todo tipo de vehículos.
+                        </p>
+                        <div class="social-links">
+                            <a href="#" class="btn btn-outline-light btn-sm me-2" title="Facebook">
+                                <i class="bi bi-facebook"></i>
+                            </a>
+                            <a href="#" class="btn btn-outline-light btn-sm me-2" title="Instagram">
+                                <i class="bi bi-instagram"></i>
+                            </a>
+                            <a href="#" class="btn btn-outline-light btn-sm me-2" title="Twitter">
+                                <i class="bi bi-twitter"></i>
+                            </a>
+                            <a href="#" class="btn btn-outline-light btn-sm" title="WhatsApp">
+                                <i class="bi bi-whatsapp"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Columna de navegación -->
+                <div class="col-lg-2 col-md-6 footer-section">
+                    <h5 class="text-primary mb-3">Navegación</h5>
+                    <ul class="list-unstyled footer-links">
+                        <li class="mb-2">
+                            <a href="index.html" class="text-light-emphasis text-decoration-none">
+                                <i class="bi bi-house me-2"></i>Inicio
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="catalogo.html" class="text-light-emphasis text-decoration-none catalog-link">
+                                <i class="bi bi-grid me-2"></i>Catálogo
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="#sobre-nosotros" class="text-light-emphasis text-decoration-none">
+                                <i class="bi bi-people me-2"></i>Sobre Nosotros
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="mayoristas.html" class="text-light-emphasis text-decoration-none">
+                                <i class="bi bi-briefcase me-2"></i>Mayoristas
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Columna de servicios -->
+                <div class="col-lg-3 col-md-6 footer-section">
+                    <h5 class="text-primary mb-3">Servicios</h5>
+                    <ul class="list-unstyled footer-links">
+                        <li class="mb-2">
+                            <a href="#" class="text-light-emphasis text-decoration-none">
+                                <i class="bi bi-truck me-2"></i>Envío a Domicilio
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="#" class="text-light-emphasis text-decoration-none">
+                                <i class="bi bi-tools me-2"></i>Instalación
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="#" class="text-light-emphasis text-decoration-none">
+                                <i class="bi bi-shield-check me-2"></i>Garantía
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="#" class="text-light-emphasis text-decoration-none">
+                                <i class="bi bi-headset me-2"></i>Soporte Técnico
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Columna de contacto -->
+                <div class="col-lg-3 col-md-6 footer-section">
+                    <h5 class="text-primary mb-3">Contacto</h5>
+                    <div class="contact-info">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="icon-wrapper bg-primary rounded-circle p-2 me-3">
+                                <i class="bi bi-geo-alt text-white"></i>
+                            </div>
+                            <div>
+                                <small class="text-light-emphasis d-block">Dirección</small>
+                                <span class="text-light">Av. Principal #123, Santiago</span>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="icon-wrapper bg-primary rounded-circle p-2 me-3">
+                                <i class="bi bi-telephone text-white"></i>
+                            </div>
+                            <div>
+                                <small class="text-light-emphasis d-block">Teléfono</small>
+                                <span class="text-light">+56 9 1234 5678</span>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="icon-wrapper bg-primary rounded-circle p-2 me-3">
+                                <i class="bi bi-envelope text-white"></i>
+                            </div>
+                            <div>
+                                <small class="text-light-emphasis d-block">Email</small>
+                                <span class="text-light">contacto@autoparts.cl</span>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <div class="icon-wrapper bg-success rounded-circle p-2 me-3">
+                                <i class="bi bi-clock text-white"></i>
+                            </div>
+                            <div>
+                                <small class="text-light-emphasis d-block">Horario</small>
+                                <span class="text-light">Lun - Vie: 8:00 - 18:00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="my-4 border-secondary">
+
+            <!-- Footer bottom -->
+            <div class="row align-items-center">
                 <div class="col-md-6">
-                    <h5>Auto Parts</h5>
-                    <p>Tu proveedor confiable de repuestos automotrices</p>
+                    <p class="mb-0 text-light-emphasis">
+                        &copy; 2024 Auto Parts. Todos los derechos reservados.
+                    </p>
                 </div>
                 <div class="col-md-6 text-md-end">
-                    <p>© 2024 Auto Parts. Todos los derechos reservados.</p>
+                    <div class="footer-legal">
+                        <a href="#" class="text-light-emphasis text-decoration-none me-3">
+                            Términos y Condiciones
+                        </a>
+                        <a href="#" class="text-light-emphasis text-decoration-none me-3">
+                            Política de Privacidad
+                        </a>
+                        <a href="#" class="text-light-emphasis text-decoration-none">
+                            Devoluciones
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
     </footer>
 
+
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script type="module" src="../js/config/firebase-config.js"></script>
-    <script type="module" src="../js/navbar-auth.js"></script>
-    <script type="module" src="../js/navbar.js"></script>
-    <script type="module" src="../js/profile.js"></script>
-    <script type="module" src="../js/auth.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+    <script type="module">
+        import { auth } from '../js/config/firebase-config.js';
+        
+        // Función para verificar si un usuario es mayorista
+        async function isMayorista(user) {
+            if (!user) return false;
+            try {
+                return user.email.toLowerCase().includes('mayorista');
+            } catch (error) {
+                console.error('Error al verificar mayorista:', error);
+                return false;
+            }
+        }
+        
+        // Actualizar enlaces del carrito
+        async function updateCartLinks(user) {
+            const cartLinks = document.querySelectorAll('.cart-link');
+            if (user) {
+                const esMayorista = await isMayorista(user);
+                cartLinks.forEach(link => {
+                    link.href = esMayorista ? '../views/carrito-mayorista.html' : '../views/carrito.html';
+                });
+            } else {
+                cartLinks.forEach(link => {
+                    link.href = '../views/carrito.html';
+                });
+            }
+        }
+
+        // Función para actualizar la UI basada en el estado de autenticación
+        async function updateAuthUI(user) {
+            const authButtons = document.getElementById('authButtons');
+            const userMenu = document.querySelector('.user-menu');
+            const adminMenuItems = document.querySelectorAll('.admin-menu');
+            const mayoristaMenuItems = document.querySelectorAll('.mayorista-menu');
+            const regularCatalogItems = document.querySelectorAll('.regular-catalog');
+            const nonMayoristaMenuItems = document.querySelectorAll('.non-mayorista-menu');
+            
+            if (user) {
+                // Ocultar botones de auth y mostrar menú de usuario
+                if (authButtons) authButtons.classList.add('d-none');
+                if (userMenu) {
+                    userMenu.classList.remove('d-none');
+                    const userNameSpan = userMenu.querySelector('.user-name');
+                    if (userNameSpan) {
+                        userNameSpan.textContent = user.email;
+                    }
+                }
+                
+                // Verificar si es mayorista
+                const esMayorista = await isMayorista(user);
+                mayoristaMenuItems.forEach(item => {
+                    if (esMayorista) {
+                        item.classList.remove('d-none');
+                    } else {
+                        item.classList.add('d-none');
+                    }
+                });
+
+                // Actualizar enlaces del catálogo según el tipo de usuario
+                const catalogLinks = document.querySelectorAll('.catalog-link');
+                catalogLinks.forEach(link => {
+                    link.href = esMayorista ? '../views/mayorista.html' : '../views/catalogo.html';
+                });
+
+                // Ocultar catálogo regular y mostrar/ocultar botón de mayoristas
+                regularCatalogItems.forEach(item => {
+                    if (esMayorista) {
+                        item.classList.add('d-none');
+                    } else {
+                        item.classList.remove('d-none');
+                    }
+                });
+
+                // Mostrar/ocultar enlace de mayoristas para no mayoristas
+                nonMayoristaMenuItems.forEach(item => {
+                    if (esMayorista) {
+                        item.classList.add('d-none');
+                    } else {
+                        item.classList.remove('d-none');
+                    }
+                });
+                
+                // Mostrar/ocultar elementos de administrador
+                adminMenuItems.forEach(item => {
+                    if (user.email === 'admin@gmail.com') {
+                        item.classList.remove('d-none');
+                    } else {
+                        item.classList.add('d-none');
+                    }
+                });
+
+                await updateCartLinks(user);
+            } else {
+                // Mostrar botones de auth y ocultar menús
+                if (authButtons) authButtons.classList.remove('d-none');
+                if (userMenu) userMenu.classList.add('d-none');
+                adminMenuItems.forEach(item => item.classList.add('d-none'));
+                mayoristaMenuItems.forEach(item => item.classList.add('d-none'));
+                regularCatalogItems.forEach(item => item.classList.remove('d-none'));
+                nonMayoristaMenuItems.forEach(item => item.classList.remove('d-none'));
+
+                await updateCartLinks(user);
+            }
+        }
+
+        // Escuchar cambios en el estado de autenticación
+        auth.onAuthStateChanged(async (user) => {
+            await updateAuthUI(user);
+            // Redirigir si no hay usuario autenticado
+            if (!user) {
+                window.location.href = 'iniciar-sesion.html';
+            }
+        });
+
+        // Configurar cierre de sesión
+        document.getElementById('logoutBtn')?.addEventListener('click', async () => {
+            try {
+                await auth.signOut();
+                window.location.href = 'index.html';
+            } catch (error) {
+                console.error('Error al cerrar sesión:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'No se pudo cerrar sesión. Intente nuevamente.',
+                    confirmButtonColor: '#0066B1'
+                });
+            }
+        });
+
+        // Funcionalidad para iniciar el cambio de contraseña
+        document.getElementById('initiatePasswordChange')?.addEventListener('click', () => {
+            Swal.fire({
+                title: '¿Cambiar contraseña?',
+                text: 'Se abrirá un formulario donde podrás cambiar tu contraseña de forma segura.',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#ffc107',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Sí, cambiar',
+                cancelButtonText: 'Cancelar',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Ocultar el prompt y mostrar el formulario
+                    document.getElementById('passwordChangePrompt').classList.add('d-none');
+                    document.getElementById('passwordFormContainer').classList.remove('d-none');
+                    
+                    // Enfocar el primer campo
+                    document.getElementById('currentPassword').focus();
+                }
+            });
+        });
+
+        // Funcionalidad para cancelar el cambio de contraseña
+        document.getElementById('cancelPasswordChange')?.addEventListener('click', () => {
+            Swal.fire({
+                title: '¿Cancelar cambio?',
+                text: 'Se perderán los datos ingresados en el formulario.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Sí, cancelar',
+                cancelButtonText: 'Continuar editando'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Resetear y ocultar el formulario
+                    document.getElementById('passwordForm').reset();
+                    document.getElementById('passwordForm').classList.remove('was-validated');
+                    clearPasswordErrors();
+                    document.getElementById('passwordFormContainer').classList.add('d-none');
+                    document.getElementById('passwordChangePrompt').classList.remove('d-none');
+                }
+            });
+        });
+
+        // Función para limpiar errores de contraseña
+        function clearPasswordErrors() {
+            const errorElements = ['currentPasswordError', 'newPasswordError', 'confirmPasswordError'];
+            errorElements.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.classList.add('d-none');
+                    element.querySelector('span').textContent = '';
+                }
+            });
+            
+            // Limpiar clases de error de los inputs
+            const inputs = ['currentPassword', 'newPassword', 'confirmPassword'];
+            inputs.forEach(id => {
+                const input = document.getElementById(id);
+                if (input) {
+                    input.classList.remove('is-invalid');
+                }
+            });
+        }
+
+        // Función para mostrar error específico
+        function showPasswordError(fieldId, message) {
+            const errorElement = document.getElementById(fieldId + 'Error');
+            const inputElement = document.getElementById(fieldId);
+            
+            if (errorElement && inputElement) {
+                errorElement.querySelector('span').textContent = message;
+                errorElement.classList.remove('d-none');
+                inputElement.classList.add('is-invalid');
+            }
+        }
+
+        // Funcionalidad para mostrar/ocultar contraseñas
+        const toggleButtons = [
+            { button: 'toggleCurrentPassword', input: 'currentPassword' },
+            { button: 'toggleNewPassword', input: 'newPassword' },
+            { button: 'toggleConfirmPassword', input: 'confirmPassword' }
+        ];
+
+        toggleButtons.forEach(({ button, input }) => {
+            document.getElementById(button)?.addEventListener('click', () => {
+                const passwordInput = document.getElementById(input);
+                const icon = document.querySelector(`#${button} i`);
+                
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    icon.className = 'bi bi-eye-slash';
+                } else {
+                    passwordInput.type = 'password';
+                    icon.className = 'bi bi-eye';
+                }
+            });
+        });
+
+        // Funcionalidad para cambiar contraseña
+        document.getElementById('passwordForm')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Limpiar errores previos
+            clearPasswordErrors();
+            
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            let hasErrors = false;
+            
+            // Validaciones personalizadas
+            if (!currentPassword.trim()) {
+                showPasswordError('currentPassword', 'Ingresa tu contraseña actual para verificar tu identidad');
+                hasErrors = true;
+            }
+            
+            if (!newPassword.trim()) {
+                showPasswordError('newPassword', 'La nueva contraseña es requerida');
+                hasErrors = true;
+            } else if (newPassword.length < 6) {
+                showPasswordError('newPassword', 'La nueva contraseña debe tener al menos 6 caracteres');
+                hasErrors = true;
+            }
+            
+            if (!confirmPassword.trim()) {
+                showPasswordError('confirmPassword', 'Confirma tu nueva contraseña');
+                hasErrors = true;
+            } else if (newPassword !== confirmPassword) {
+                showPasswordError('confirmPassword', 'Las contraseñas no coinciden');
+                hasErrors = true;
+            }
+            
+            // Si hay errores, no continuar
+            if (hasErrors) {
+                e.target.classList.add('was-validated');
+                return;
+            }
+            
+            try {
+                // Mostrar loading
+                Swal.fire({
+                    title: 'Verificando contraseña...',
+                    text: 'Por favor espera mientras verificamos tu identidad',
+                    allowOutsideClick: false,
+                    showConfirmButton: false,
+                    willOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+                
+                const user = auth.currentUser;
+                if (!user) {
+                    throw new Error('Usuario no autenticado');
+                }
+                
+                // Reautenticar al usuario con su contraseña actual
+                const { EmailAuthProvider, reauthenticateWithCredential, updatePassword } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js');
+                
+                try {
+                    const credential = EmailAuthProvider.credential(user.email, currentPassword);
+                    await reauthenticateWithCredential(user, credential);
+                } catch (reauthError) {
+                    console.error('Error de reautenticación:', reauthError);
+                    // Lanzar un error específico para contraseña incorrecta
+                    throw { 
+                        code: 'auth/wrong-password',
+                        message: 'La contraseña actual es incorrecta'
+                    };
+                }
+                
+                // Actualizar loading
+                Swal.update({
+                    title: 'Actualizando contraseña...',
+                    text: 'Tu contraseña está siendo actualizada'
+                });
+                
+                // Cambiar la contraseña
+                await updatePassword(user, newPassword);
+                
+                // Mostrar éxito y regresar al prompt
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Contraseña cambiada!',
+                    text: 'Tu contraseña ha sido actualizada exitosamente.',
+                    confirmButtonColor: '#28a745',
+                    confirmButtonText: 'Entendido'
+                }).then(() => {
+                    // Limpiar formulario y regresar al prompt
+                    document.getElementById('passwordForm').reset();
+                    document.getElementById('passwordForm').classList.remove('was-validated');
+                    clearPasswordErrors();
+                    document.getElementById('passwordFormContainer').classList.add('d-none');
+                    document.getElementById('passwordChangePrompt').classList.remove('d-none');
+                });
+                
+            } catch (error) {
+                console.error('Error al cambiar contraseña:', error);
+                console.error('Error code:', error.code);
+                console.error('Error message:', error.message);
+                
+                let errorMessage = 'Ocurrió un error inesperado.';
+                let targetField = null;
+                
+                // Detectar errores de contraseña incorrecta
+                const isPasswordError = error.code === 'auth/wrong-password' || 
+                                       error.code === 'auth/invalid-credential' ||
+                                       error.code === 'auth/invalid-login-credentials' ||
+                                       error.message.toLowerCase().includes('password') ||
+                                       error.message.toLowerCase().includes('credential') ||
+                                       error.message.toLowerCase().includes('wrong') ||
+                                       error.message.toLowerCase().includes('incorrect');
+                
+                if (isPasswordError) {
+                    errorMessage = 'La contraseña actual es incorrecta. Verifica e intenta nuevamente.';
+                    targetField = 'currentPassword';
+                } else {
+                    switch (error.code) {
+                        case 'auth/weak-password':
+                            errorMessage = 'La nueva contraseña es muy débil. Debe tener al menos 6 caracteres.';
+                            targetField = 'newPassword';
+                            break;
+                        case 'auth/too-many-requests':
+                            errorMessage = 'Demasiados intentos fallidos. Espera unos minutos antes de intentar nuevamente.';
+                            break;
+                        case 'auth/network-request-failed':
+                            errorMessage = 'Error de conexión. Verifica tu conexión a internet e intenta nuevamente.';
+                            break;
+                        case 'auth/user-disabled':
+                            errorMessage = 'Tu cuenta ha sido deshabilitada. Contacta al soporte técnico.';
+                            break;
+                        case 'auth/user-not-found':
+                            errorMessage = 'Usuario no encontrado. Intenta cerrar sesión e iniciar nuevamente.';
+                            break;
+                        default:
+                            console.error('Error code not handled:', error.code);
+                            // Si no es un error conocido, revisar si puede ser de contraseña por el mensaje
+                            if (error.message && (error.message.includes('auth') || error.message.includes('Firebase'))) {
+                                errorMessage = 'La contraseña actual es incorrecta. Verifica e intenta nuevamente.';
+                                targetField = 'currentPassword';
+                            } else {
+                                errorMessage = 'Ocurrió un error inesperado. Intenta nuevamente.';
+                            }
+                    }
+                }
+                
+                // Mostrar error específico en el campo correspondiente
+                if (targetField) {
+                    showPasswordError(targetField, errorMessage);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error en el campo',
+                        text: errorMessage,
+                        confirmButtonColor: '#dc3545'
+                    });
+                } else {
+                    // Error general
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error al cambiar contraseña',
+                        text: errorMessage,
+                        confirmButtonColor: '#dc3545'
+                    });
+                }
+            }
+        });
+
+        // Validaciones en tiempo real
+        document.getElementById('currentPassword')?.addEventListener('input', (e) => {
+            if (e.target.value.trim()) {
+                document.getElementById('currentPasswordError').classList.add('d-none');
+                e.target.classList.remove('is-invalid');
+            }
+        });
+
+        document.getElementById('newPassword')?.addEventListener('input', (e) => {
+            const value = e.target.value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            // Limpiar error de nueva contraseña
+            if (value.trim() && value.length >= 6) {
+                document.getElementById('newPasswordError').classList.add('d-none');
+                e.target.classList.remove('is-invalid');
+            }
+            
+            // Validar confirmación si ya se escribió algo
+            if (confirmPassword) {
+                const confirmInput = document.getElementById('confirmPassword');
+                const confirmError = document.getElementById('confirmPasswordError');
+                
+                if (value === confirmPassword) {
+                    confirmError.classList.add('d-none');
+                    confirmInput.classList.remove('is-invalid');
+                } else {
+                    showPasswordError('confirmPassword', 'Las contraseñas no coinciden');
+                }
+            }
+        });
+
+        document.getElementById('confirmPassword')?.addEventListener('input', (e) => {
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = e.target.value;
+            
+            if (confirmPassword.trim()) {
+                if (newPassword === confirmPassword) {
+                    document.getElementById('confirmPasswordError').classList.add('d-none');
+                    e.target.classList.remove('is-invalid');
+                } else {
+                    showPasswordError('confirmPassword', 'Las contraseñas no coinciden');
+                }
+            }
+        });
+    </script>
+    <script type="module" src="../js/app.js"></script>
+<script type="module" src="../js/cart.js"></script>
+<script type="module" src="../js/cart-counter-manager.js"></script>
+<script type="module" src="../js/perfil.js"></script>
 </body>
 </html> 

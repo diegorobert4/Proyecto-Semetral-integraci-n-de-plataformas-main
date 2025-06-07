@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo Mayorista - Auto Parts</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-bootstrap-4/bootstrap-4.css" rel="stylesheet">
+    <link rel="stylesheet" href="../styles/main.css">
+    <link href="../css/footer.css" rel="stylesheet">
+    <style>
+        .profile-hero {
+            height: 30vh;
+            background: linear-gradient(135deg, #1a1a1a 0%, #333333 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('../imgs/m4-competition-portada.PNG') center center;
+            background-size: cover;
+            opacity: 0.2;
+            z-index: 1;
+        }
+
+        .profile-hero .hero-content {
+            position: relative;
+            z-index: 2;
+            padding-top: 5vh;
+        }
+
+        .profile-hero h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(45deg, #ff3366, #ff6b6b);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        /* Estilos para las tarjetas de productos */
+        .product-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            height: 100%;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .product-card .card-img-top {
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .original-price {
+            text-decoration: line-through;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        .wholesale-price {
+            color: #28a745;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .lot-size {
+            font-size: 0.9rem;
+            color: #6c757d;
+            font-style: italic;
+        }
+
+        .quantity-control {
+            max-width: 150px;
+            margin: 0 auto;
+        }
+
+        .quantity-control input {
+            text-align: center;
+        }
+
+        .quantity-control input::-webkit-inner-spin-button,
+        .quantity-control input::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .quantity-control input[type=number] {
+            -moz-appearance: textfield;
+        }
+
+        .discount-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: #ff3366;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            z-index: 2;
+        }
+
+        .catalog-card {
+            position: relative;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .catalog-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .price-original {
+            font-size: 0.9rem;
+        }
+
+        .price-mayorista {
+            font-size: 1.1rem;
+        }
+
+        /* Estilos para los controles de cantidad en el catálogo mayorista */
+        .quantity-section {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+
+        .quantity-section .form-label {
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .quantity-section .input-group {
+            max-width: 100%;
+        }
+
+        .quantity-section .quantity-input {
+            font-weight: bold;
+            background-color: #fff;
+        }
+
+        .quantity-section .btn {
+            border-color: #0066B1;
+            color: #0066B1;
+        }
+
+        .quantity-section .btn:hover {
+            background-color: #0066B1;
+            border-color: #0066B1;
+            color: white;
+        }
+
+        .price-section {
+            border-bottom: 1px solid #e9ecef;
+            padding-bottom: 10px;
+        }
+
+        .total-price-section {
+            background-color: #e8f4f8;
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid #0066B1;
+        }
+
+        /* Mejorar las tarjetas del catálogo mayorista */
+        .catalog-card .card-body {
+            padding: 1.25rem;
+        }
+
+        .catalog-card .btn-primary {
+            background-color: #0066B1;
+            border-color: #0066B1;
+        }
+
+        .catalog-card .btn-primary:hover {
+            background-color: #004d8a;
+            border-color: #004d8a;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark sticky-top shadow-sm">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="../views/index.html">
+                <i class="bi bi-gear-fill me-2"></i>
+                <span class="fw-bold">Auto Parts</span>
+            </a>
+            
+            <!-- Contenedor de botones móviles -->
+            <div class="d-md-none d-flex align-items-center ms-auto">
+                <!-- Carrito en móviles -->
+                <a class="btn btn-primary d-flex align-items-center gap-2 me-2" href="../views/carrito-mayorista.html">
+                    <i class="bi bi-cart3"></i>
+                    <span class="badge bg-danger cart-count">0</span>
+                </a>
+                
+                <!-- Botón de menú móvil -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </div>
+    
+            <!-- Menú desplegable -->
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="../views/index.html">
+                            <i class="bi bi-house-door me-2"></i>Inicio
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="https://auto-parts-2025.web.app/views/mayorista.html">
+                            <i class="bi bi-box-seam me-2"></i>Catálogo Mayorista
+                        </a>
+                    </li>
+                </ul>
+    
+                <div class="d-flex align-items-center">
+                    <!-- Carrito -->
+                    <a href="../views/carrito-mayorista.html" class="btn btn-primary position-relative me-3">
+                        <i class="bi bi-cart3"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger cart-count-mayorista">
+                            0
+                        </span>
+                    </a>
+
+                    <!-- Menú de usuario -->
+                    <div class="user-menu dropdown ms-2">
+                        <button class="btn btn-outline-light dropdown-toggle d-flex align-items-center" type="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle me-2"></i>
+                            <span class="user-name">Usuario</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center" href="../views/mi-perfil.html">
+                                    <i class="bi bi-person me-2 text-primary"></i>Mi Perfil
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center" href="../views/mis-ordenes.html">
+                                    <i class="bi bi-box me-2"></i>Mis Órdenes
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center text-danger" href="#" id="logoutBtn">
+                                    <i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesión
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <!-- Header del Catálogo -->
+        <div class="profile-hero mb-4">
+            <div class="container">
+                <div class="hero-content text-center">
+                    <h1>Catálogo Mayorista</h1>
+                    <p class="lead text-white">Accede a precios especiales en todos nuestros productos</p>
+                    <div class="alert alert-success d-inline-block mt-3">
+                        <i class="bi bi-tag-fill me-2"></i>Descuento mayorista: 15%
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Catálogo Completo -->
+        <section class="container py-5" id="catalogo">
+            <!-- Filtros y Búsqueda -->
+            <div class="row mb-4">
+                <div class="col-lg-4 col-md-6 mb-3">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Buscar productos..." id="searchInput">
+                        <button class="btn btn-outline-primary" type="button">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 mb-3">
+                    <select class="form-select" id="categoryFilter">
+                        <option value="todos">Todas las categorías</option>
+                        <option value="motores">Motores y Componentes</option>
+                        <option value="frenos">Frenos y Suspensión</option>
+                        <option value="electricidad">Electricidad y Baterías</option>
+                        <option value="accesorios">Accesorios y Seguridad</option>
+                    </select>
+                </div>
+                <div class="col-lg-4 col-md-12 mb-3">
+                    <select class="form-select" id="brandFilter">
+                        <option value="todas">Todas las marcas</option>
+                        <!-- Las marcas se cargarán dinámicamente -->
+                    </select>
+                </div>
+            </div>
+
+            <!-- Grid de Productos -->
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4" id="productGrid">
+                <!-- Template para los productos -->
+                <template id="productTemplate">
+                    <div class="col">
+                        <div class="card h-100 product-card">
+                            <img src="" alt="" class="card-img-top">
+                            <div class="card-body">
+                                <h5 class="card-title"></h5>
+                                <p class="card-text description"></p>
+                                <div class="price-section mb-3">
+                                    <div class="original-price">Precio normal: $<span class="normal-price"></span></div>
+                                    <div class="wholesale-price">Precio mayorista: $<span class="final-price"></span></div>
+                                    <div class="lot-size">Venta por lotes de 5 unidades</div>
+                                </div>
+                                <div class="quantity-control input-group mb-3">
+                                    <button class="btn btn-outline-secondary decrease-qty" type="button">-</button>
+                                    <input type="number" class="form-control quantity-input" value="5" min="5" step="5">
+                                    <button class="btn btn-outline-secondary increase-qty" type="button">+</button>
+                                </div>
+                                <button class="btn btn-primary w-100 add-to-cart">
+                                    <i class="bi bi-cart-plus me-2"></i>Agregar al carrito
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-5 mt-5 modern-footer">
+        <div class="container">
+            <div class="row gy-4">
+                <!-- Columna de la marca -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="footer-brand">
+                        <h3 class="fw-bold mb-3">
+                            <i class="bi bi-gear-fill text-primary me-2"></i>
+                            Auto Parts
+                        </h3>
+                        <p class="text-light-emphasis mb-3">
+                            Tu proveedor confiable de repuestos automotrices de alta calidad. 
+                            Especialistas en piezas originales y compatibles para todo tipo de vehículos.
+                        </p>
+                        <div class="social-links">
+                            <a href="#" class="btn btn-outline-light btn-sm me-2" title="Facebook">
+                                <i class="bi bi-facebook"></i>
+                            </a>
+                            <a href="#" class="btn btn-outline-light btn-sm me-2" title="Instagram">
+                                <i class="bi bi-instagram"></i>
+                            </a>
+                            <a href="#" class="btn btn-outline-light btn-sm me-2" title="Twitter">
+                                <i class="bi bi-twitter"></i>
+                            </a>
+                            <a href="#" class="btn btn-outline-light btn-sm" title="WhatsApp">
+                                <i class="bi bi-whatsapp"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Columna de navegación -->
+                <div class="col-lg-2 col-md-6 footer-section">
+                    <h5 class="text-primary mb-3">Navegación</h5>
+                    <ul class="list-unstyled footer-links">
+                        <li class="mb-2">
+                            <a href="index.html" class="text-light-emphasis text-decoration-none">
+                                <i class="bi bi-house me-2"></i>Inicio
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="catalogo.html" class="text-light-emphasis text-decoration-none catalog-link">
+                                <i class="bi bi-grid me-2"></i>Catálogo
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="mayorista.html" class="text-light-emphasis text-decoration-none">
+                                <i class="bi bi-briefcase me-2"></i>Mayoristas
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Columna de servicios mayoristas -->
+                <div class="col-lg-3 col-md-6 footer-section">
+                    <h5 class="text-primary mb-3">Servicios Mayoristas</h5>
+                    <ul class="list-unstyled footer-links">
+                        <li class="mb-2">
+                            <a href="#" class="text-light-emphasis text-decoration-none">
+                                <i class="bi bi-percent me-2"></i>Descuentos Especiales
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="#" class="text-light-emphasis text-decoration-none">
+                                <i class="bi bi-truck me-2"></i>Envío Gratuito
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="#" class="text-light-emphasis text-decoration-none">
+                                <i class="bi bi-calendar3 me-2"></i>Crédito 30 días
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="#" class="text-light-emphasis text-decoration-none">
+                                <i class="bi bi-headset me-2"></i>Soporte Prioritario
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Columna de contacto -->
+                <div class="col-lg-3 col-md-6 footer-section">
+                    <h5 class="text-primary mb-3">Contacto</h5>
+                    <div class="contact-info">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="icon-wrapper bg-primary rounded-circle p-2 me-3">
+                                <i class="bi bi-geo-alt text-white"></i>
+                            </div>
+                            <div>
+                                <small class="text-light-emphasis d-block">Dirección</small>
+                                <span class="text-light">Av. Principal #123, Santiago</span>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="icon-wrapper bg-primary rounded-circle p-2 me-3">
+                                <i class="bi bi-telephone text-white"></i>
+                            </div>
+                            <div>
+                                <small class="text-light-emphasis d-block">Teléfono Mayoristas</small>
+                                <span class="text-light">+56 9 8765 4321</span>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="icon-wrapper bg-primary rounded-circle p-2 me-3">
+                                <i class="bi bi-envelope text-white"></i>
+                            </div>
+                            <div>
+                                <small class="text-light-emphasis d-block">Email Mayoristas</small>
+                                <span class="text-light">mayoristas@autoparts.cl</span>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <div class="icon-wrapper bg-success rounded-circle p-2 me-3">
+                                <i class="bi bi-clock text-white"></i>
+                            </div>
+                            <div>
+                                <small class="text-light-emphasis d-block">Horario Mayoristas</small>
+                                <span class="text-light">Lun - Vie: 7:00 - 19:00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="my-4 border-secondary">
+
+            <!-- Footer bottom -->
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <p class="mb-0 text-light-emphasis">
+                        &copy; 2024 Auto Parts. Todos los derechos reservados.
+                    </p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <div class="footer-legal">
+                        <a href="#" class="text-light-emphasis text-decoration-none me-3">
+                            Términos Mayoristas
+                        </a>
+                        <a href="#" class="text-light-emphasis text-decoration-none me-3">
+                            Política de Crédito
+                        </a>
+                        <a href="#" class="text-light-emphasis text-decoration-none">
+                            Devoluciones
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.all.min.js"></script>
+    <script type="module">
+        import { auth } from '../js/config/firebase-config.js';
+        
+        // Función para verificar si un usuario es mayorista
+        async function isMayorista(user) {
+            if (!user) return false;
+            try {
+                return user.email.toLowerCase().includes('mayorista');
+            } catch (error) {
+                console.error('Error al verificar mayorista:', error);
+                return false;
+            }
+        }
+        
+        // Escuchar cambios en el estado de autenticación
+        auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                const esMayorista = await isMayorista(user);
+                
+                // Actualizar enlaces del catálogo según el tipo de usuario
+                const catalogLinks = document.querySelectorAll('.catalog-link');
+                catalogLinks.forEach(link => {
+                    link.href = esMayorista ? '../views/mayorista.html' : '../views/catalogo.html';
+                });
+            }
+        });
+
+        // Configurar cierre de sesión
+        document.getElementById('logoutBtn')?.addEventListener('click', async () => {
+            try {
+                await auth.signOut();
+                window.location.href = 'index.html';
+            } catch (error) {
+                console.error('Error al cerrar sesión:', error);
+            }
+        });
+    </script>
+    <script type="module" src="../js/app.js"></script>
+    <script type="module" src="../js/cart-mayorista.js"></script>
+    <script type="module" src="../js/cart-counter-manager.js"></script>
+    <script type="module" src="../js/mayorista-catalogo.js"></script>
+</body>
+</html> 

@@ -8,9 +8,10 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../styles/main.css">
+    <link href="../css/footer.css" rel="stylesheet">
 </head>
 <body>
-    <!-- Contenedor para el navbar -->
+    <!-- Navbar -->
     <nav class="navbar navbar-expand-md navbar-dark bg-dark sticky-top shadow-sm">
         <div class="container-fluid">
             <a class="navbar-brand d-flex align-items-center" href="../views/index.html">
@@ -21,13 +22,13 @@
             <!-- Contenedor de botones móviles -->
             <div class="d-md-none d-flex align-items-center ms-auto">
                 <!-- Carrito en móviles -->
-                <a class="btn btn-primary d-flex align-items-center gap-2 me-2" href="../views/carrito.html">
+                <a class="btn btn-primary d-flex align-items-center gap-2 me-2 cart-link" href="../views/carrito.html">
                     <i class="bi bi-cart3"></i>
                     <span class="badge bg-danger cart-count">0</span>
                 </a>
                 
                 <!-- Botón de menú móvil -->
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                     <span class="navbar-toggler-icon"></span>
                 </button>
             </div>
@@ -36,17 +37,22 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link d-flex align-items-center" href="../views/index.html">
+                        <a class="nav-link active" href="../views/index.html">
                             <i class="bi bi-house-door me-2"></i>Inicio
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link d-flex align-items-center" href="../views/catalogo.html">
+                    <li class="nav-item regular-catalog">
+                        <a class="nav-link" href="../views/catalogo.html">
                             <i class="bi bi-grid me-2"></i>Catálogo
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link d-flex align-items-center" href="../views/mayoristas.html">
+                    <li class="nav-item mayorista-menu d-none">
+                        <a class="nav-link" href="https://auto-parts-2025.web.app/views/mayorista.html">
+                            <i class="bi bi-box-seam me-2"></i>Catálogo Mayorista
+                        </a>
+                    </li>
+                    <li class="nav-item non-mayorista-menu">
+                        <a class="nav-link" href="../views/mayoristas.html">
                             <i class="bi bi-box-seam me-2"></i>Mayoristas
                         </a>
                     </li>
@@ -54,33 +60,44 @@
     
                 <div class="d-flex align-items-center">
                     <!-- Carrito -->
-                    <a href="../views/carrito.html" class="btn btn-primary position-relative me-3">
+                    <a href="../views/carrito.html" class="btn btn-primary position-relative me-3 cart-link">
                         <i class="bi bi-cart3"></i>
                         <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger cart-count">
                             0
-                            <span class="visually-hidden">Artículos en el carrito</span>
                         </span>
                     </a>
 
                     <!-- Botones de escritorio -->
                     <div id="authButtons" class="d-flex align-items-center">
-                        <a href="../views/iniciar-sesion.html" class="btn btn-outline-light">
+                        <a href="iniciar-sesion.html" class="btn btn-outline-light">
                             <i class="bi bi-person me-2"></i>Iniciar Sesión
                         </a>
                     </div>
                 
                     <!-- Menú de usuario -->
                     <div class="user-menu d-none dropdown ms-2">
-                        <button class="btn btn-outline-light dropdown-toggle d-flex align-items-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <button class="btn btn-outline-light dropdown-toggle d-flex align-items-center" type="button" data-bs-toggle="dropdown">
                             <i class="bi bi-person-circle me-2"></i>
                             <span class="user-name">Usuario</span>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end shadow border-0">
                             <li>
-                                <a class="dropdown-item d-flex align-items-center" href="../views/mi-perfil.html">
+                                <a class="dropdown-item d-flex align-items-center" href="mi-perfil.html">
                                     <i class="bi bi-person me-2 text-primary"></i>Mi Perfil
                                 </a>
                             </li>
+                            <!-- Enlace de Administración (visible solo para admin) -->
+                            <li class="admin-menu d-none">
+                                <a class="dropdown-item d-flex align-items-center" href="admin/mayoristas.html">
+                                    <i class="bi bi-shield-lock me-2 text-primary"></i>Panel de Administración
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center" href="mis-ordenes.html">
+                                    <i class="bi bi-box me-2"></i>Mis Órdenes
+                                </a>
+                            </li>
+
                             <li><hr class="dropdown-divider"></li>
                             <li>
                                 <a class="dropdown-item d-flex align-items-center text-danger" href="#" id="logoutBtn">
@@ -92,7 +109,7 @@
                 </div>
             </div>
         </div>
-    </nav> 
+    </nav>
 
     <!-- Hero Section -->
     <div class="hero-section" style="background-image: url('../imgs/m4-competition-portada.PNG');">
@@ -101,139 +118,474 @@
                 <h1>Bienvenido a <span class="gradient-text">Auto Parts</span></h1>
                 <p class="lead mb-4">Visita nuestro catalogo de productos</p>
                 <div class="hero-buttons">
-                    <a href="catalogo.html" class="btn btn-primary me-3 hover-glow">Ver Catalogo</a>
+                    <a href="catalogo.html" class="btn btn-primary me-3 hover-glow regular-catalog">Ver Catálogo</a>
+                    <a href="https://auto-parts-2025.web.app/views/mayorista.html" class="btn btn-primary me-3 hover-glow mayorista-menu d-none">Ver Catálogo Mayorista</a>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Categorías Principales -->
+    <!-- Carrusel de Promociones -->
     <section class="container py-5">
-        <h1 class="text-center mb-4">Categorías Principales</h1>
+        <div class="text-center mb-5">
+            <h2 class="h1 mb-3">Ofertas y Promociones</h2>
+            <p class="lead text-muted">Aprovecha nuestras mejores ofertas en repuestos automotrices</p>
+        </div>
+        
+        <div id="promocionesCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="2000">
+            <!-- Indicadores -->
+            <div class="carousel-indicators">
+                <button type="button" data-bs-target="#promocionesCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                <button type="button" data-bs-target="#promocionesCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                <button type="button" data-bs-target="#promocionesCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+                <button type="button" data-bs-target="#promocionesCarousel" data-bs-slide-to="3" aria-label="Slide 4"></button>
+            </div>
+            
+            <!-- Slides -->
+            <div class="carousel-inner rounded-3 shadow-lg">
+                <div class="carousel-item active">
+                    <div class="carousel-slide" style="background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('https://images.unsplash.com/photo-1580273916550-e323be2ae537?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2064&q=80');">
+                        <div class="carousel-content">
+                            <h3 class="carousel-title">Filtros Premium</h3>
+                            <p class="carousel-text">Todos los filtros de aceite y aire de marcas premium</p>
+                            <a href="../views/catalogo.html" class="btn btn-primary btn-lg">Ver Ofertas</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="carousel-item">
+                    <div class="carousel-slide" style="background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('https://gpautomocion.com/wp-content/uploads/2022/07/Imagen-destacada-6-1536x1026.jpg');">
+                        <div class="carousel-content">
+                            <h3 class="carousel-title">Sistema de Frenos</h3>
+                            <p class="carousel-text">Pastillas y discos de freno con garantía extendida. Tu seguridad es nuestra prioridad</p>
+                            <a href="../views/catalogo.html" class="btn btn-primary btn-lg">Explorar</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="carousel-item">
+                    <div class="carousel-slide" style="background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1974&q=80');">
+                        <div class="carousel-content">
+                            <h3 class="carousel-title">Baterías de Alto Rendimiento</h3>
+                            <p class="carousel-text">Baterías con 3 años de garantía. Arranca tu vehículo sin preocupaciones</p>
+                            <a href="../views/catalogo.html" class="btn btn-primary btn-lg">Ver Modelos</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="carousel-item">
+                    <div class="carousel-slide" style="background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('https://images.unsplash.com/photo-1621905251189-08b45d6a269e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2069&q=80');">
+                        <div class="carousel-content">
+                            <h3 class="carousel-title">Programa Mayorista</h3>
+                            <p class="carousel-text">Únete a nuestro programa y obtén hasta 15% de descuento en compras al por mayor</p>
+                            <a href="mayoristas.html" class="btn btn-primary btn-lg">Más Información</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Controles -->
+            <button class="carousel-control-prev" type="button" data-bs-target="#promocionesCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Anterior</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#promocionesCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Siguiente</span>
+            </button>
+        </div>
+    </section>
+
+    
+
+    <!-- Productos Populares Section -->
+    <section id="productos-populares" class="container py-5">
+        <div class="text-center mb-5">
+            <h2 class="h1 mb-3">Productos Populares</h2>
+            <p class="lead text-muted">Los repuestos más vendidos y mejor valorados por nuestros clientes</p>
+        </div>
+        
+        <!-- Grid de Productos Populares -->
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-2 row-cols-lg-4 g-4" id="popularProductsGrid">
+            <!-- Los productos se cargarán dinámicamente -->
+            <div class="col">
+                <div class="card h-100 shadow-sm" style="border: none;">
+                    <div class="card-body d-flex flex-column justify-content-center align-items-center text-center" style="min-height: 300px;">
+                        <div class="spinner-border text-primary mb-3" role="status">
+                            <span class="visually-hidden">Cargando...</span>
+                        </div>
+                        <p class="text-muted">Cargando productos...</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card h-100 shadow-sm" style="border: none;">
+                    <div class="card-body d-flex flex-column justify-content-center align-items-center text-center" style="min-height: 300px;">
+                        <div class="spinner-border text-primary mb-3" role="status">
+                            <span class="visually-hidden">Cargando...</span>
+                        </div>
+                        <p class="text-muted">Cargando productos...</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card h-100 shadow-sm" style="border: none;">
+                    <div class="card-body d-flex flex-column justify-content-center align-items-center text-center" style="min-height: 300px;">
+                        <div class="spinner-border text-primary mb-3" role="status">
+                            <span class="visually-hidden">Cargando...</span>
+                        </div>
+                        <p class="text-muted">Cargando productos...</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card h-100 shadow-sm" style="border: none;">
+                    <div class="card-body d-flex flex-column justify-content-center align-items-center text-center" style="min-height: 300px;">
+                        <div class="spinner-border text-primary mb-3" role="status">
+                            <span class="visually-hidden">Cargando...</span>
+                        </div>
+                        <p class="text-muted">Cargando productos...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Botón para ver más productos -->
+        <div class="text-center mt-4">
+            <a href="catalogo.html" class="btn btn-primary btn-lg" id="catalogButton">
+                <i class="bi bi-grid me-2"></i>Ver Catálogo Completo
+            </a>
+        </div>
+    </section>
+
+    <!-- Sobre Nosotros Section -->
+    <section id="sobre-nosotros" class="container py-5">
         <div class="row">
-            <!-- Motores y Componentes -->
-            <div class="col-md-3 mb-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Motores y Componentes</h5>
-                        <ul class="list-unstyled">
-                            <li>Filtros de aceite</li>
-                            <li>Filtros de aire</li>
-                            <li>Bujías</li>
-                            <li>Correas de distribución</li>
-                        </ul>
-                    </div>
-                </div>
+            <div class="col-md-6">
+                <h2 class="mb-4">Sobre Nosotros</h2>
+                <p class="lead">En Auto Parts, somos más que una tienda de repuestos automotrices; somos tu socio confiable en el mantenimiento y mejora de tu vehículo.</p>
+                <p>Con más de una década de experiencia en el mercado automotriz, nos hemos consolidado como líderes en la distribución de repuestos y accesorios de alta calidad. Nuestro compromiso es proporcionar:</p>
+                <ul class="list-unstyled">
+                    <li><i class="bi bi-check-circle-fill text-primary me-2"></i>Productos originales y certificados</li>
+                    <li><i class="bi bi-check-circle-fill text-primary me-2"></i>Asesoramiento técnico especializado</li>
+                    <li><i class="bi bi-check-circle-fill text-primary me-2"></i>Precios competitivos</li>
+                    <li><i class="bi bi-check-circle-fill text-primary me-2"></i>Garantía en todos nuestros productos</li>
+                </ul>
+                <p>Nuestra misión es mantener tu vehículo en óptimas condiciones, ofreciendo soluciones integrales y un servicio excepcional.</p>
             </div>
-            <!-- Frenos y Suspensión -->
-            <div class="col-md-3 mb-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Frenos y Suspensión</h5>
-                        <ul class="list-unstyled">
-                            <li>Pastillas de freno</li>
-                            <li>Discos de freno</li>
-                            <li>Amortiguadores</li>
-                            <li>Rótulas</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            <!-- Electricidad y Baterías -->
-            <div class="col-md-3 mb-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Electricidad y Baterías</h5>
-                        <ul class="list-unstyled">
-                            <li>Alternadores</li>
-                            <li>Baterías</li>
-                            <li>Luces y faros</li>
-                            <li>Sensores y fusibles</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            <!-- Accesorios y Seguridad -->
-            <div class="col-md-3 mb-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Accesorios y Seguridad</h5>
-                        <ul class="list-unstyled">
-                            <li>Alarmas</li>
-                            <li>Cinturones de seguridad</li>
-                            <li>Cubre asientos</li>
-                            <li>Kits de emergencia</li>
-                        </ul>
-                    </div>
+            <div class="col-md-6">
+                <div class="rounded overflow-hidden shadow-lg">
+                    <img src="../imgs/taller-mecanico.png" alt="Taller Auto Parts" class="img-fluid">
                 </div>
             </div>
         </div>
     </section>
 
-
-    <!-- Modal de Login -->
-    <div class="modal fade" id="loginModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Iniciar Sesión</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-5 mt-5 modern-footer">
+        <div class="container">
+            <div class="row gy-4">
+                <!-- Columna de la marca -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="footer-brand">
+                        <h3 class="fw-bold mb-3">
+                            <i class="bi bi-gear-fill text-primary me-2"></i>
+                            Auto Parts
+                        </h3>
+                        <p class="text-light-emphasis mb-3">
+                            Tu proveedor confiable de repuestos automotrices de alta calidad. 
+                            Especialistas en piezas originales y compatibles para todo tipo de vehículos.
+                        </p>
+                        <div class="social-links">
+                            <a href="#" class="btn btn-outline-light btn-sm me-2" title="Facebook">
+                                <i class="bi bi-facebook"></i>
+                            </a>
+                            <a href="#" class="btn btn-outline-light btn-sm me-2" title="Instagram">
+                                <i class="bi bi-instagram"></i>
+                            </a>
+                            <a href="#" class="btn btn-outline-light btn-sm me-2" title="Twitter">
+                                <i class="bi bi-twitter"></i>
+                            </a>
+                            <a href="#" class="btn btn-outline-light btn-sm" title="WhatsApp">
+                                <i class="bi bi-whatsapp"></i>
+                            </a>
+                        </div>
+                    </div>
                 </div>
-                <div class="modal-body">
-                    <form id="loginForm">
-                        <div class="mb-3">
-                            <label class="form-label">Email</label>
-                            <input type="email" class="form-control" id="loginEmail" required>
+
+                <!-- Columna de navegación -->
+                <div class="col-lg-2 col-md-6 footer-section">
+                    <h5 class="text-primary mb-3">Navegación</h5>
+                    <ul class="list-unstyled footer-links">
+                        <li class="mb-2">
+                            <a href="index.html" class="text-light-emphasis text-decoration-none">
+                                <i class="bi bi-house me-2"></i>Inicio
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="catalogo.html" class="text-light-emphasis text-decoration-none catalog-link">
+                                <i class="bi bi-grid me-2"></i>Catálogo
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="#sobre-nosotros" class="text-light-emphasis text-decoration-none">
+                                <i class="bi bi-people me-2"></i>Sobre Nosotros
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="mayoristas.html" class="text-light-emphasis text-decoration-none">
+                                <i class="bi bi-briefcase me-2"></i>Mayoristas
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Columna de servicios -->
+                <div class="col-lg-3 col-md-6 footer-section">
+                    <h5 class="text-primary mb-3">Servicios</h5>
+                    <ul class="list-unstyled footer-links">
+                        <li class="mb-2">
+                            <a href="#" class="text-light-emphasis text-decoration-none">
+                                <i class="bi bi-truck me-2"></i>Envío a Domicilio
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="#" class="text-light-emphasis text-decoration-none">
+                                <i class="bi bi-tools me-2"></i>Instalación
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="#" class="text-light-emphasis text-decoration-none">
+                                <i class="bi bi-shield-check me-2"></i>Garantía
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="#" class="text-light-emphasis text-decoration-none">
+                                <i class="bi bi-headset me-2"></i>Soporte Técnico
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Columna de contacto -->
+                <div class="col-lg-3 col-md-6 footer-section">
+                    <h5 class="text-primary mb-3">Contacto</h5>
+                    <div class="contact-info">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="icon-wrapper bg-primary rounded-circle p-2 me-3">
+                                <i class="bi bi-geo-alt text-white"></i>
+                            </div>
+                            <div>
+                                <small class="text-light-emphasis d-block">Dirección</small>
+                                <span class="text-light">Av. Principal #123, Santiago</span>
+                            </div>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label">Contraseña</label>
-                            <input type="password" class="form-control" id="loginPassword" required>
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="icon-wrapper bg-primary rounded-circle p-2 me-3">
+                                <i class="bi bi-telephone text-white"></i>
+                            </div>
+                            <div>
+                                <small class="text-light-emphasis d-block">Teléfono</small>
+                                <span class="text-light">+56 9 1234 5678</span>
+                            </div>
                         </div>
-                        <div class="mb-3">
-                            <button type="submit" class="btn btn-primary w-100">Iniciar Sesión</button>
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="icon-wrapper bg-primary rounded-circle p-2 me-3">
+                                <i class="bi bi-envelope text-white"></i>
+                            </div>
+                            <div>
+                                <small class="text-light-emphasis d-block">Email</small>
+                                <span class="text-light">contacto@autoparts.cl</span>
+                            </div>
                         </div>
-                        <div class="text-center">
-                            <a href="#" id="registroLink">¿No tienes cuenta? Regístrate</a>
+                        <div class="d-flex align-items-center">
+                            <div class="icon-wrapper bg-success rounded-circle p-2 me-3">
+                                <i class="bi bi-clock text-white"></i>
+                            </div>
+                            <div>
+                                <small class="text-light-emphasis d-block">Horario</small>
+                                <span class="text-light">Lun - Vie: 8:00 - 18:00</span>
+                            </div>
                         </div>
-                    </form>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <!-- Footer -->
-    <footer class="bg-dark text-light py-4 mt-5">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-4">
-                    <h5>Auto Parts</h5>
-                    <p>Tu proveedor confiable de repuestos automotrices</p>
+            <hr class="my-4 border-secondary">
+
+            <!-- Footer bottom -->
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <p class="mb-0 text-light-emphasis">
+                        &copy; 2024 Auto Parts. Todos los derechos reservados.
+                    </p>
                 </div>
-                <div class="col-md-4">
-                    <h5>Enlaces Rápidos</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="#" class="text-light">Sobre Nosotros</a></li>
-                        <li><a href="#" class="text-light">Contacto</a></li>
-                        <li><a href="#" class="text-light">Términos y Condiciones</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-4">
-                    <h5>Contacto</h5>
-                    <ul class="list-unstyled">
-                        <li>Email: contacto@autoparts.com</li>
-                        <li>Teléfono: (123) 456-7890</li>
-                        <li>Dirección: Calle Principal #123</li>
-                    </ul>
+                <div class="col-md-6 text-md-end">
+                    <div class="footer-legal">
+                        <a href="#" class="text-light-emphasis text-decoration-none me-3">
+                            Términos y Condiciones
+                        </a>
+                        <a href="#" class="text-light-emphasis text-decoration-none me-3">
+                            Política de Privacidad
+                        </a>
+                        <a href="#" class="text-light-emphasis text-decoration-none">
+                            Devoluciones
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
     </footer>
 
+
+
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script type="module" src="../js/config/firebase-config.js"></script>
-    <script type="module" src="../js/navbar-auth.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+    <script type="module">
+        import { auth } from '../js/config/firebase-config.js';
+        
+        // Función para verificar si un usuario es mayorista
+        async function isMayorista(user) {
+            if (!user) return false;
+            try {
+                // Verificar si el email del usuario contiene 'mayorista'
+                return user.email.toLowerCase().includes('mayorista');
+            } catch (error) {
+                console.error('Error al verificar mayorista:', error);
+                return false;
+            }
+        }
+        
+        // Función para actualizar la UI basada en el estado de autenticación
+        async function updateAuthUI(user) {
+            const authButtons = document.getElementById('authButtons');
+            const userMenu = document.querySelector('.user-menu');
+            const adminMenuItems = document.querySelectorAll('.admin-menu');
+            const mayoristaMenuItems = document.querySelectorAll('.mayorista-menu');
+            const regularCatalogItems = document.querySelectorAll('.regular-catalog');
+            const nonMayoristaMenuItems = document.querySelectorAll('.non-mayorista-menu');
+            const cartLinks = document.querySelectorAll('.cart-link');
+            
+            if (user) {
+                // Ocultar botones de auth y mostrar menú de usuario
+                if (authButtons) authButtons.classList.add('d-none');
+                if (userMenu) {
+                    userMenu.classList.remove('d-none');
+                    const userNameSpan = userMenu.querySelector('.user-name');
+                    if (userNameSpan) {
+                        userNameSpan.textContent = user.email;
+                    }
+                }
+                
+                // Verificar si es mayorista
+                const esMayorista = await isMayorista(user);
+
+                // Actualizar enlaces del carrito según el tipo de usuario
+                cartLinks.forEach(link => {
+                    link.href = esMayorista ? '../views/carrito-mayorista.html' : '../views/carrito.html';
+                });
+
+                // Actualizar enlaces del catálogo según el tipo de usuario
+                const catalogLinks = document.querySelectorAll('.catalog-link');
+                catalogLinks.forEach(link => {
+                    link.href = esMayorista ? '../views/mayorista.html' : '../views/catalogo.html';
+                });
+
+                // Actualizar clases de contadores de carrito según el tipo de usuario
+                const cartCountElements = document.querySelectorAll('.cart-count');
+                cartCountElements.forEach(element => {
+                    if (esMayorista) {
+                        element.classList.remove('cart-count');
+                        element.classList.add('cart-count-mayorista');
+                    } else {
+                        element.classList.remove('cart-count-mayorista');
+                        element.classList.add('cart-count');
+                    }
+                });
+                
+                mayoristaMenuItems.forEach(item => {
+                    if (esMayorista) {
+                        item.classList.remove('d-none');
+                    } else {
+                        item.classList.add('d-none');
+                    }
+                });
+
+                // Ocultar catálogo regular y mostrar/ocultar botón de mayoristas
+                regularCatalogItems.forEach(item => {
+                    if (esMayorista) {
+                        item.classList.add('d-none');
+                    } else {
+                        item.classList.remove('d-none');
+                    }
+                });
+
+                // Mostrar/ocultar enlace de mayoristas para no mayoristas
+                nonMayoristaMenuItems.forEach(item => {
+                    if (esMayorista) {
+                        item.classList.add('d-none');
+                    } else {
+                        item.classList.remove('d-none');
+                    }
+                });
+                
+                // Mostrar/ocultar elementos de administrador
+                adminMenuItems.forEach(item => {
+                    if (user.email === 'admin@gmail.com') {
+                        item.classList.remove('d-none');
+                    } else {
+                        item.classList.add('d-none');
+                    }
+                });
+            } else {
+                // Mostrar botones de auth y ocultar menús
+                if (authButtons) authButtons.classList.remove('d-none');
+                if (userMenu) userMenu.classList.add('d-none');
+                adminMenuItems.forEach(item => item.classList.add('d-none'));
+                mayoristaMenuItems.forEach(item => item.classList.add('d-none'));
+                regularCatalogItems.forEach(item => item.classList.remove('d-none'));
+                nonMayoristaMenuItems.forEach(item => item.classList.remove('d-none'));
+
+                // Restablecer enlaces del carrito al valor por defecto
+                cartLinks.forEach(link => {
+                    link.href = '../views/carrito.html';
+                });
+
+                // Restablecer clases de contadores al valor por defecto
+                const cartCountElements = document.querySelectorAll('.cart-count-mayorista, .cart-count'); 
+                cartCountElements.forEach(element => {
+                    element.classList.remove('cart-count-mayorista');
+                    element.classList.add('cart-count');
+                });
+            }
+        }
+
+        // Escuchar cambios en el estado de autenticación
+        auth.onAuthStateChanged(async (user) => {
+            await updateAuthUI(user);
+        });
+
+        // Configurar cierre de sesión
+        document.getElementById('logoutBtn')?.addEventListener('click', async () => {
+            try {
+                await auth.signOut();
+                window.location.href = 'index.html';
+            } catch (error) {
+                console.error('Error al cerrar sesión:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'No se pudo cerrar sesión. Intente nuevamente.',
+                    confirmButtonColor: '#0066B1'
+                });
+            }
+        });
+    </script>
     <script type="module" src="../js/app.js"></script>
-    <script type="module" src="../js/navbar.js"></script>
+<script type="module" src="../js/cart.js"></script>
+<script type="module" src="../js/cart-mayorista.js"></script>
+<script type="module" src="../js/cart-counter-manager.js"></script>
+<script type="module" src="../js/popular-products.js"></script>
 </body>
 </html>

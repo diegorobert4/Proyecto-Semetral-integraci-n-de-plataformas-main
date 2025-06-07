@@ -1,19 +1,27 @@
 // Importar las funciones necesarias de Firebase
-import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
-import { getFirestore, collection, addDoc, getDocs, query, where } from "firebase/firestore";
-import { getAnalytics } from "firebase/analytics";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { 
+  getFirestore, 
+  collection, 
+  addDoc, 
+  getDocs, 
+  query, 
+  where 
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js";
 
-// Configuración de Firebase
+
 const firebaseConfig = {
-    apiKey: "AIzaSyB7zt55jPT8IYyfGNnrcVw2HZjRQwc3Y14",
-    authDomain: "auto-parts-2025.firebaseapp.com",
-    projectId: "auto-parts-2025",
-    storageBucket: "auto-parts-2025.firebasestorage.app",
-    messagingSenderId: "758243524320",
-    appId: "1:758243524320:web:7540895a596c808f795a85",
-    measurementId: "G-QC6EKQR3XS"
+  apiKey: "AIzaSyB7zt55jPT8IYyfGNnrcVw2HZjRQwc3Y14",
+  authDomain: "auto-parts-2025.firebaseapp.com",
+  projectId: "auto-parts-2025",
+  storageBucket: "auto-parts-2025.appspot.com", // <-- aquí estaba el error
+  messagingSenderId: "758243524320",
+  appId: "1:758243524320:web:7540895a596c808f795a85",
+  measurementId: "G-QC6EKQR3XS"
 };
+
 
 // Inicializar Firebase
 const app = initializeApp(firebaseConfig);

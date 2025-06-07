@@ -11,9 +11,9 @@ import {
     doc, 
     setDoc,
     getDoc,
-    collection
+    collection,
+    addDoc
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-import { updateUIOnAuth } from './navbar-auth.js';
 
 // Elementos del DOM
 const loginForm = document.getElementById('loginForm');
@@ -23,6 +23,12 @@ const tabBtns = document.querySelectorAll('.tab-btn');
 const forgotPassword = document.getElementById('forgotPassword');
 const googleLogin = document.getElementById('googleLogin');
 const togglePasswordBtns = document.querySelectorAll('.toggle-password');
+
+// Inicializar el proveedor de Google
+const googleProvider = new GoogleAuthProvider();
+googleProvider.setCustomParameters({
+    prompt: 'select_account'
+});
 
 // Cambio entre formularios
 tabBtns.forEach(btn => {
@@ -70,10 +76,17 @@ function showLoader() {
 // Función para mostrar errores
 function showError(error) {
     console.error('Error:', error);
+    let message = getErrorMessage(error.code) || error.message;
+    
+    // Manejar específicamente el error de API key inválida
+    if (error.code === 'auth/api-key-not-valid') {
+        message = 'Error de configuración. Por favor, contacte al administrador.';
+    }
+    
     Swal.fire({
         icon: 'error',
         title: 'Error',
-        text: getErrorMessage(error.code) || error.message,
+        text: message,
         confirmButtonColor: '#0066B1'
     });
 }
@@ -87,8 +100,78 @@ function showSuccess(title, text) {
         timer: 2000,
         showConfirmButton: false
     }).then(() => {
-        window.location.href = 'mi-perfil.html';
+        // Si es admin, redirigir al panel de administración
+        if (auth.currentUser && auth.currentUser.email === 'admin@gmail.com') {
+            window.location.href = 'admin/mayoristas.html';
+        } else {
+            window.location.href = 'mi-perfil.html';
+        }
     });
+}
+
+// Función para actualizar la UI basada en el estado de autenticación
+function updateUIOnAuth(user) {
+    const authButtons = document.getElementById('authButtons');
+    const userMenu = document.querySelector('.user-menu');
+    const adminMenu = document.querySelector('.admin-menu');
+    
+    if (user) {
+        // Ocultar botones de auth y mostrar menú de usuario
+        if (authButtons) authButtons.classList.add('d-none');
+        if (userMenu) {
+            userMenu.classList.remove('d-none');
+            const userNameSpan = userMenu.querySelector('.user-name');
+            if (userNameSpan) {
+                userNameSpan.textContent = user.email;
+            }
+        }
+        
+        // Mostrar/ocultar menú de administrador
+        if (adminMenu) {
+            if (user.email === 'admin@gmail.com') {
+                adminMenu.classList.remove('d-none');
+            } else {
+                adminMenu.classList.add('d-none');
+            }
+        }
+    } else {
+        // Mostrar botones de auth y ocultar menús
+        if (authButtons) authButtons.classList.remove('d-none');
+        if (userMenu) userMenu.classList.add('d-none');
+        if (adminMenu) adminMenu.classList.add('d-none');
+    }
+}
+
+// Función para procesar solicitud mayorista pendiente
+async function procesarSolicitudMayoristaPendiente(user) {
+    const solicitudGuardada = localStorage.getItem('solicitudMayorista');
+    if (solicitudGuardada) {
+        try {
+            const formData = JSON.parse(solicitudGuardada);
+            // Agregar el ID del usuario a la solicitud
+            formData.userId = user.uid;
+            formData.email = user.email;
+
+            // Crear la solicitud en Firestore
+            await addDoc(collection(db, 'solicitudes_mayorista'), formData);
+
+            // Limpiar localStorage
+            localStorage.removeItem('solicitudMayorista');
+
+            // Mostrar mensaje de éxito
+            Swal.fire({
+                icon: 'success',
+                title: '¡Solicitud Enviada!',
+                text: 'Tu solicitud ha sido enviada correctamente. Te notificaremos cuando sea revisada.',
+                confirmButtonColor: '#0066B1'
+            }).then(() => {
+                window.location.href = 'mayoristas.html';
+            });
+        } catch (error) {
+            console.error('Error al procesar solicitud mayorista:', error);
+            showError(error);
+        }
+    }
 }
 
 // Login con email y contraseña
@@ -125,16 +208,24 @@ if (loginForm) {
                         fechaRegistro: new Date().toISOString()
                     });
                 }
-                updateUIOnAuth(userCredential.user);
-                showSuccess('¡Bienvenido!', 'Has iniciado sesión correctamente');
+                
+                // Procesar solicitud mayorista pendiente si existe
+                await procesarSolicitudMayoristaPendiente(userCredential.user);
+
+                // Si no hay solicitud pendiente, redirigir normalmente
+                if (!localStorage.getItem('solicitudMayorista')) {
+                    // Actualizar UI y redirigir según el tipo de usuario
+                    updateUIOnAuth(userCredential.user);
+                    if (userCredential.user.email === 'admin@gmail.com') {
+                        window.location.href = 'admin/mayoristas.html';
+                    } else {
+                        window.location.href = 'mi-perfil.html';
+                    }
+                }
             }
         } catch (error) {
             console.error('Error de inicio de sesión:', error);
-            if (error.code === 'auth/invalid-credential') {
-                showError({ message: 'Email o contraseña incorrectos' });
-            } else {
-                showError(error);
-            }
+            showError(error);
         }
     });
 }
@@ -202,7 +293,18 @@ if (registerForm) {
                 }
 
                 updateUIOnAuth(userCredential.user);
-                showSuccess('¡Registro exitoso!', 'Tu cuenta ha sido creada correctamente. Por favor, verifica tu email.');
+                
+                // Mostrar mensaje de éxito sin redirección automática
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Registro exitoso!',
+                    text: 'Tu cuenta ha sido creada correctamente. ¡Bienvenido!',
+                    confirmButtonColor: '#0066B1',
+                    confirmButtonText: 'Continuar'
+                }).then(() => {
+                    // Redirigir al index o mantener en la página actual
+                    window.location.href = '../index.html';
+                });
             } catch (firestoreError) {
                 console.error('Error al guardar en Firestore:', firestoreError);
                 try {
@@ -245,20 +347,40 @@ if (registerForm) {
 // Login con Google
 if (googleLogin) {
     googleLogin.addEventListener('click', async () => {
-        showLoader();
-        const provider = new GoogleAuthProvider();
-        
         try {
-            const result = await signInWithPopup(auth, provider);
-            await setDoc(doc(db, 'usuarios', result.user.uid), {
-                nombreCompleto: result.user.displayName,
-                email: result.user.email,
-                fechaRegistro: new Date().toISOString()
-            }, { merge: true });
+            showLoader();
+            const result = await signInWithPopup(auth, googleProvider);
+            const user = result.user;
 
-            updateUIOnAuth(result.user);
-            showSuccess('¡Bienvenido!', 'Has iniciado sesión con Google correctamente');
+            // Verificar si el usuario ya existe en Firestore
+            const userDoc = await getDoc(doc(db, 'usuarios', user.uid));
+            
+            if (!userDoc.exists()) {
+                // Si no existe, crear el documento del usuario
+                await setDoc(doc(db, 'usuarios', user.uid), {
+                    email: user.email,
+                    nombreCompleto: user.displayName || '',
+                    fechaRegistro: new Date().toISOString(),
+                    photoURL: user.photoURL || '',
+                    authProvider: 'google'
+                });
+            }
+
+            // Procesar solicitud mayorista pendiente si existe
+            await procesarSolicitudMayoristaPendiente(user);
+
+            // Si no hay solicitud pendiente, redirigir normalmente
+            if (!localStorage.getItem('solicitudMayorista')) {
+                // Actualizar UI y redirigir
+                updateUIOnAuth(user);
+                if (user.email === 'admin@gmail.com') {
+                    window.location.href = 'admin/mayoristas.html';
+                } else {
+                    window.location.href = 'mi-perfil.html';
+                }
+            }
         } catch (error) {
+            console.error('Error en inicio de sesión con Google:', error);
             showError(error);
         }
     });
@@ -297,28 +419,23 @@ if (forgotPassword) {
     });
 }
 
-// Función para traducir mensajes de error
+// Escuchar cambios en el estado de autenticación
+auth.onAuthStateChanged((user) => {
+    updateUIOnAuth(user);
+});
+
+// Función para obtener mensajes de error personalizados
 function getErrorMessage(errorCode) {
-    switch (errorCode) {
-        case 'auth/email-already-in-use':
-            return 'Este email ya está registrado';
-        case 'auth/invalid-email':
-            return 'Email inválido';
-        case 'auth/operation-not-allowed':
-            return 'Operación no permitida';
-        case 'auth/weak-password':
-            return 'La contraseña debe tener al menos 6 caracteres';
-        case 'auth/user-disabled':
-            return 'Usuario deshabilitado';
-        case 'auth/user-not-found':
-            return 'Usuario no encontrado';
-        case 'auth/wrong-password':
-            return 'Contraseña incorrecta';
-        case 'auth/invalid-credential':
-            return 'Email o contraseña incorrectos';
-        case 'auth/popup-closed-by-user':
-            return 'Ventana de Google cerrada antes de completar el inicio de sesión';
-        default:
-            return 'Ocurrió un error inesperado';
-    }
+    const errorMessages = {
+        'auth/invalid-credential': 'Email o contraseña incorrectos',
+        'auth/user-disabled': 'Esta cuenta ha sido deshabilitada',
+        'auth/user-not-found': 'No existe una cuenta con este email',
+        'auth/wrong-password': 'Contraseña incorrecta',
+        'auth/email-already-in-use': 'Este email ya está registrado',
+        'auth/weak-password': 'La contraseña debe tener al menos 6 caracteres',
+        'auth/invalid-email': 'El formato del email no es válido',
+        'auth/operation-not-allowed': 'Operación no permitida',
+        'auth/api-key-not-valid': 'Error de configuración. Por favor, contacte al administrador.'
+    };
+    return errorMessages[errorCode] || 'Ocurrió un error inesperado';
 } 

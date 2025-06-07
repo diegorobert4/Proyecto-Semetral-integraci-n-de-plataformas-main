@@ -1,36 +1,68 @@
 rules_version = '2';
+
 service cloud.firestore {
   match /databases/{database}/documents {
+    // Función para verificar si el usuario está autenticado
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
     // Función para verificar si el usuario es administrador
     function isAdmin() {
-      return request.auth != null && request.auth.token.email == 'admin@gmail.com';
+      return isAuthenticated() && request.auth.token.email == 'admin@gmail.com';
     }
 
-    // Reglas para la colección de productos
-    match /productos/{producto} {
-      allow read: if true;  // Cualquiera puede leer productos
-      allow write: if isAdmin();  // Solo admin puede escribir productos
+    // Función para verificar si el usuario es el propietario del documento
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
     }
 
-    // Reglas para la colección de usuarios
-    match /usuarios/{usuario} {
-      allow read: if request.auth != null && 
-        (request.auth.uid == usuario || isAdmin());
-      allow write: if request.auth != null && 
-        (request.auth.uid == usuario || isAdmin());
+    // Permitir acceso temporal para depuración (REMOVER EN PRODUCCIÓN)
+    match /{document=**} {
+      allow read, write: if true;
     }
 
-    // Reglas para la colección de órdenes
-    match /ordenes/{orden} {
-      allow read: if request.auth != null && 
-        (resource.data.userId == request.auth.uid || isAdmin());
-      allow create: if request.auth != null;
-      allow update, delete: if isAdmin();
+    // Reglas para la colección usuarios
+    match /usuarios/{userId} {
+      // Permitir lectura si el usuario está autenticado y es el propietario o es admin
+      allow read: if isAuthenticated() && (isOwner(userId) || isAdmin());
+      // Permitir creación si el usuario está autenticado y el ID coincide con su UID
+      allow create: if isAuthenticated() && isOwner(userId);
+      // Permitir actualización si el usuario es el propietario o es admin
+      allow update: if isAuthenticated() && (isOwner(userId) || isAdmin());
+      // Solo el admin puede eliminar usuarios
+      allow delete: if isAdmin();
     }
 
-    // Regla para la colección de prueba (solo en desarrollo)
-    match /test/{document} {
-      allow read, write: if false;  // Deshabilitar en producción
+    // Reglas para productos
+    match /productos/{productoId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Reglas para órdenes
+    match /ordenes/{ordenId} {
+      allow read: if isAuthenticated() && (isAdmin() || resource.data.userId == request.auth.uid);
+      allow create: if isAuthenticated();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Reglas para solicitudes mayoristas
+    match /solicitudes_mayorista/{solicitudId} {
+      // Solo el administrador puede leer todas las solicitudes
+      allow read: if isAdmin();
+      // Un usuario autenticado puede crear una solicitud
+      allow create: if isAuthenticated();
+      // Solo el administrador puede actualizar solicitudes (aprobar/rechazar)
+      allow update: if isAdmin();
+      // Solo el administrador puede eliminar solicitudes
+      allow delete: if isAdmin();
+    }
+
+    // Reglas para la colección carrito
+    match /carrito/{carritoId} {
+      allow read, write: if isAuthenticated() && resource.data.userId == request.auth.uid;
     }
   }
 } 

@@ -1,0 +1,146 @@
+/* Estilos específicos del footer mejorado */
+footer.modern-footer {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+    border-top: 3px solid #ff3366;
+    box-shadow: 0 -2px 20px rgba(0, 0, 0, 0.2);
+}
+
+.footer-links a:hover {
+    color: #ff3366 !important;
+    transform: translateX(5px);
+    transition: all 0.3s ease;
+}
+
+.footer-links a {
+    transition: all 0.3s ease;
+}
+
+.icon-wrapper {
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+}
+
+.icon-wrapper:hover {
+    transform: scale(1.1);
+}
+
+.social-links a:hover {
+    background-color: #ff3366;
+    border-color: #ff3366;
+    transform: translateY(-2px);
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(255, 51, 102, 0.3);
+}
+
+.social-links a {
+    transition: all 0.3s ease;
+}
+
+.footer-brand h3 {
+    font-family: 'Rajdhani', sans-serif;
+    letter-spacing: 1px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.footer-brand p {
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+.contact-info .text-light {
+    font-weight: 500;
+}
+
+.contact-info small {
+    font-size: 0.8rem;
+    opacity: 0.8;
+}
+
+.footer-legal a:hover {
+    color: #ff3366 !important;
+    transition: all 0.3s ease;
+}
+
+.footer-legal a {
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+
+/* Efectos adicionales */
+.footer-section {
+    position: relative;
+}
+
+.footer-section h5::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 30px;
+    height: 2px;
+    background: linear-gradient(90deg, #ff3366, transparent);
+}
+
+.footer-section h5 {
+    position: relative;
+    margin-bottom: 1.5rem !important;
+}
+
+/* Responsividad mejorada */
+@media (max-width: 768px) {
+    .social-links {
+        text-align: center;
+        margin-top: 1rem;
+    }
+    
+    .footer-legal {
+        text-align: center !important;
+        margin-top: 1rem;
+    }
+    
+    .footer-brand {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    
+    .contact-info .d-flex {
+        justify-content: center;
+        text-align: left;
+    }
+}
+
+@media (max-width: 576px) {
+    .footer-legal a {
+        display: block;
+        margin: 0.25rem 0;
+    }
+    
+    .social-links a {
+        margin: 0.25rem;
+    }
+}
+
+/* Animaciones suaves */
+footer * {
+    transition: all 0.3s ease;
+}
+
+/* Mejoras visuales adicionales */
+.footer-brand .bi-gear-fill {
+    animation: rotate 10s linear infinite;
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Hover effects para secciones */
+.footer-section:hover h5 {
+    color: #ff3366;
+} 
