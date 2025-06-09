@@ -1,4 +1,5 @@
 import { productosAPI } from './firebase-config.js';
+import { productosAPI as apiProductos } from './api/products.js';
 
 const productosIniciales = [
     // Motores y Componentes
@@ -100,4 +101,21 @@ export async function inicializarBaseDeDatos() {
         console.error("Error al inicializar la base de datos:", error);
         return false;
     }
-} 
+}
+
+async function mostrarProductosPopulares() {
+    try {
+        const productos = await apiProductos.obtenerPopulares(4);
+        // Renderizar los productos en tu HTML
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
+// Ejemplos de uso:
+const todosLosProductos = await apiProductos.obtenerTodos();
+const productoPorId = await apiProductos.obtenerPorId('id-del-producto');
+const productosPorCategoria = await apiProductos.obtenerPorCategoria('motores');
+const productosPorMarca = await apiProductos.obtenerPorMarca('bosch');
+const productosBuscados = await apiProductos.buscar('filtro');
+const productosPopulares = await apiProductos.obtenerPopulares(4); 

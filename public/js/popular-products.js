@@ -8,6 +8,7 @@ import {
     doc,
     getDoc
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { productosAPI } from './api/products.js';
 
 class PopularProducts {
     constructor() {
@@ -92,26 +93,15 @@ class PopularProducts {
                 </div>
             `;
 
-            // Consulta para obtener solo 4 productos
-            const productosRef = collection(db, 'productos');
-            const q = query(productosRef, limit(4));
-            const querySnapshot = await getDocs(q);
-            
-            console.log(`📦 Se encontraron ${querySnapshot.size} productos`);
-            
-            if (querySnapshot.empty) {
+            // Obtener productos populares
+            const productos = await productosAPI.obtenerPopulares(4);
+
+            // Mostrar productos
+            if (productos.length > 0) {
+                popularGrid.innerHTML = productos.map(this.crearProductoHTML).join('');
+            } else {
                 this.showNoProductsMessage(popularGrid);
-                return;
             }
-
-            // Guardar productos en cache
-            querySnapshot.forEach((doc) => {
-                const productData = doc.data();
-                this.products.push({ id: doc.id, ...productData });
-            });
-
-            // Renderizar productos normales
-            this.renderProducts();
 
             console.log('✅ Productos populares cargados correctamente');
             
@@ -847,6 +837,25 @@ class PopularProducts {
                 </div>
             `;
         }
+    }
+
+    // Función para crear el HTML de un producto
+    crearProductoHTML(producto) {
+        return `
+            <div class="col">
+                <div class="card h-100 shadow-sm" style="border: none;">
+                    <img src="${producto.imagenes[0]}" class="card-img-top" alt="${producto.nombre}" style="height: 200px; object-fit: cover;">
+                    <div class="card-body">
+                        <h5 class="card-title">${producto.nombre}</h5>
+                        <p class="card-text text-muted">${producto.marca}</p>
+                        <p class="card-text fw-bold">$${producto.precio.retail.toLocaleString()}</p>
+                        <button class="btn btn-primary w-100" onclick="agregarAlCarrito('${producto.id}')">
+                            <i class="bi bi-cart-plus me-2"></i>Agregar al Carrito
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
     }
 }
 
